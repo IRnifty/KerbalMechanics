@@ -1,7 +1,17 @@
-Kerbal Mechanics: Part Failures
-V0.2: Alpha
+WARNING: BACK UP ALL STOCK PARTS!
+WARNING: BACK UP ALL STOCK PARTS!
+WARNING: BACK UP ALL STOCK PARTS!
 
-This software is provided "as-is" with no warranties.
+This mod currently replaces stock parts in order to add failure functionality.
+
+WARNING: BACK UP ALL STOCK PARTS!
+
+
+
+Kerbal Mechanics: Part Failures
+V0.1: Alpha
+
+This software is provided "as-is" with no warrantees.
 
 Redistribution and/or modification of anything provided is STRICTLY PROHIBITED.
 
@@ -18,15 +28,8 @@ please leave your feedback in a mature manner.
 
 FEATURES:
 
-Parts that can fail are tested based on their "reliability", which drains faster or slower, depending on the "quality".
-Each module inside a part is individually tested, as an example, an engine will have up to 4 different pieces that can fail:
-- The ignition coil
-- The cooling system
-- The gimbal motor
-- The alternator (not yet implemented)
-
-Most failures have two options for fixing. A standard fix, which will cost Rocket Parts, and a second, more silly option,
-which is free, but provides a risk of further damage. The free option may need to be clicked more than once.
+Parts that can fail are tested based on their "reliability", which drains faster or slower, depending on the "quality",
+which is tweakable (modifiable in the Editor by right-clicking the part).
 
 Engines can fail:
   - Ignition failures while throttling up from 0, or while running the engine
@@ -34,13 +37,12 @@ Engines can fail:
   - Gimbal freezes while the engine is running, reducing maneuverability of the craft.
 
   - Failures are fixed by sending a Kerbal on EVA, right-clicking on the broken part, and selecting "Fix Engine".
-  - The free fix has a chance to cause the part to explode.
 
 Decouplers can fail:
   - While decoupling in any way, the decoupler may either decouple, do nothing, or explode.
 
-  - Failures are fixed by sending a Kerbal on EVA, right-clicking on the broken part, and selecting "Re-rig Decoupler".
-  - The free fix has a chance of either decoupling or causing the part to explode. It may need to be clicked more than once.
+  - Failures are fixed by sending a Kerbal on EVA, right-clicking on the broken part, and selecting "Bash With Hammer".
+    The part may still either decouple, do nothing, or explode. "Bash With Hammer" may need to be clicked more than once.
 
 Lights can fail:
   - Once a light has begun to fail, it will begin flickering for a few seconds, and then burn out.

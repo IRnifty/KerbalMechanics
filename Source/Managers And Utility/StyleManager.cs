@@ -29,6 +29,10 @@ namespace Kerbal_Mechanics
             GUIStyle upperLeftRed = new GUIStyle(sm.textStyles[0]);
             upperLeftRed.normal.textColor = Color.red;
             styles.Add("Upper Left - Red", upperLeftRed);
+
+            GUIStyle guiRed = new GUIStyle(HighLogic.Skin.label);
+            guiRed.normal.textColor = Color.red;
+            styles.Add("GUI - Red", guiRed);
         }
 
         public static void Initialize()

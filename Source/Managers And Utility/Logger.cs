@@ -7,17 +7,17 @@ namespace Kerbal_Mechanics
     {
         public static void DebugLog(string text)
         {
-            Debug.Log("[KM]: " + text);
+            Debug.Log("[KM] (Log): " + text);
         }
 
         public static void DebugWarning(string text)
         {
-            Debug.LogWarning("[KM]: " + text);
+            Debug.LogWarning("[KM] (Warning): " + text);
         }
 
         public static void DebugError(string text)
         {
-            Debug.LogError("[KM]: " + text);
+            Debug.LogError("[KM] (ERROR): " + text);
         }
 
         public static void LogToFile(string text, bool asLines)

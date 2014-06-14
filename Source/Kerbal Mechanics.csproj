@@ -49,15 +49,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModuleAnchoredDecouplerReliability.cs" />
-    <Compile Include="KMUtil.cs" />
-    <Compile Include="ModuleDecouplerReliability.cs" />
-    <Compile Include="ModuleEngineReliability.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="ModuleLightReliability.cs" />
-    <Compile Include="SoundManager.cs" />
+    <Compile Include="Managers And Utility\ModuleInjector.cs" />
+    <Compile Include="Managers And Utility\KMUtil.cs" />
+    <Compile Include="Managers And Utility\Logger.cs" />
+    <Compile Include="Managers And Utility\ModuleInjectorPreStart.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityCooling.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityGimbal.cs" />
+    <Compile Include="ModuleReliabilityManager.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityBase.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityDecoupler.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityIgnitor.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityLight.cs" />
+    <Compile Include="ModuleRocketPartsContainer.cs" />
+    <Compile Include="Managers And Utility\SoundManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StyleManager.cs" />
+    <Compile Include="Managers And Utility\StyleManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

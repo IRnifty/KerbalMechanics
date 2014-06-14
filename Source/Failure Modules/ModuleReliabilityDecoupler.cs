@@ -251,8 +251,6 @@ namespace Kerbal_Mechanics
             GUILayout.BeginHorizontal();
 
             GUILayout.BeginVertical();
-            GUILayout.Label("Reliability:", HighLogic.Skin.label);
-            GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label("Chances of failure:", HighLogic.Skin.label);
             GUILayout.Label("Silent Malfunction:", HighLogic.Skin.label);
             GUILayout.Label("Explosive Disassembly:", HighLogic.Skin.label);
@@ -260,8 +258,6 @@ namespace Kerbal_Mechanics
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label(reliability.ToString("##0.#%"), HighLogic.Skin.label);
-            GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label((chanceOfNothing - chanceOfExplosion).ToString("##0.#####%"), HighLogic.Skin.label);
             GUILayout.Label(chanceOfExplosion.ToString("##0.#####%"), HighLogic.Skin.label);

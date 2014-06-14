@@ -123,7 +123,7 @@ namespace Kerbal_Mechanics
             {
                 engine.staged = engine.EngineIgnited || engine.staged;
 
-                if (engine.EngineIgnited && failure == "")
+                if (engine.EngineIgnited && failure == "" && engine.currentThrottle > 0f)
                 {
                     if (timeSinceFailCheck < timeTillFailCheck)
                     {
@@ -150,7 +150,7 @@ namespace Kerbal_Mechanics
             {
                 engineFX.staged = engineFX.EngineIgnited || engineFX.staged;
 
-                if (engineFX.EngineIgnited && !CheatOptions.InfiniteFuel && failure == "")
+                if (engineFX.EngineIgnited && failure == "" && engineFX.currentThrottle > 0f)
                 {
                     if (timeSinceFailCheck < timeTillFailCheck)
                     {

@@ -135,9 +135,9 @@ namespace Kerbal_Mechanics
             {
                 engine.staged = engine.EngineIgnited || engine.staged;
 
-                if (engine.EngineIgnited && failure == "")
+                if (engine.EngineIgnited && failure == "" && currFrameThrust > 0f)
                 {
-                    if (currFrameThrust > 0f && lastFrameThrust == 0f)
+                    if (lastFrameThrust == 0f)
                     {
                         if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
                         {

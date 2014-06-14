@@ -110,7 +110,7 @@ namespace Kerbal_Mechanics
         {
             base.OnUpdate();
 
-            if (gimbal)
+            if (gimbal && FlightInputHandler.state.mainThrottle > 0f)
             {
                 if (timeSinceFailCheck < timeTillFailCheck)
                 {

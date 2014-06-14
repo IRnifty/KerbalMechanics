@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Text;
@@ -62,6 +63,16 @@ namespace Kerbal_Mechanics
             showingGUI = false;
             Events["ShowGUI"].active = true;
 
+            StartCoroutine("PostStart");
+        }
+
+        /// <summary>
+        /// Called when the part is updated.
+        /// </summary>
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+
             bool shouldBeRed = false;
 
             foreach (ModuleReliabilityBase mRel in rModuleList)
@@ -102,7 +113,7 @@ namespace Kerbal_Mechanics
         {
             if (showingGUI && (HighLogic.LoadedSceneIsEditor || HighLogic.LoadedSceneIsFlight))
             {
-                windowRect = GUI.Window(GetInstanceID(), windowRect, GUIWindow, "Reliability Info: " + part.partInfo.title, HighLogic.Skin.window);
+                windowRect = GUI.Window(GetInstanceID(), windowRect, GUIWindow, "Reliability Information", HighLogic.Skin.window);
             }
         }
         #endregion
@@ -141,11 +152,13 @@ namespace Kerbal_Mechanics
         void GUIWindow(int windowID)
         {
             //X Button
-            if (GUI.Button(new Rect(windowRect.width - 29f, 5f, 24f, 24f), "X", HighLogic.Skin.button))
+            if (GUI.Button(new Rect(windowRect.width - 25f, 5f, 20f, 20f), "X", HighLogic.Skin.button))
             {
                 showingGUI = false;
                 Events["ShowGUI"].active = true;
             }
+
+            GUILayout.Label(part.partInfo.title, HighLogic.Skin.label);
 
             scrollPos = GUILayout.BeginScrollView(scrollPos, HighLogic.Skin.scrollView);
 
@@ -154,7 +167,7 @@ namespace Kerbal_Mechanics
                 //Module Title
                 GUILayout.BeginHorizontal();
                 
-                if (GUILayout.Button((displayingModule[i] ? "-" : "+"), HighLogic.Skin.button, GUILayout.Width(24f), GUILayout.Height(24f)))
+                if (GUILayout.Button((displayingModule[i] ? "-" : "+"), HighLogic.Skin.button, GUILayout.Width(20f), GUILayout.Height(20f)))
                 {
                     displayingModule[i] = !displayingModule[i];
                 }
@@ -197,8 +210,6 @@ namespace Kerbal_Mechanics
             }
 
             GUILayout.EndScrollView();
-
-            GUILayout.Label(windowRect.ToString(), HighLogic.Skin.label);
 
             //Drag Window
             GUI.DragWindow();

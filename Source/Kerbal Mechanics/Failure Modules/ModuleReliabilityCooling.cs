@@ -110,6 +110,11 @@ namespace Kerbal_Mechanics
             }
 
             Fields["quality"].guiName = "Cooling System " + Fields["quality"].guiName;
+
+            if (failure != "")
+            {
+                BreakCooling(false);
+            }
         }
 
         /// <summary>
@@ -136,7 +141,7 @@ namespace Kerbal_Mechanics
 
                         if (Random.Range(0f, 1f) < CurrentRunningChanceToFail)
                         {
-                            BreakCooling();
+                            BreakCooling(true);
                         }
                     }
                 }
@@ -163,7 +168,7 @@ namespace Kerbal_Mechanics
 
                         if (Random.Range(0f, 1f) < CurrentRunningChanceToFail)
                         {
-                            BreakCooling();
+                            BreakCooling(true);
                         }
                     }
                 }
@@ -181,7 +186,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Fixes the cooling using spare parts.
         /// </summary>
-        [KSPEvent(active = true, guiName = "Repair Cooling", guiActive = false, guiActiveUnfocused = true, unfocusedRange = 3f, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiName = "Repair Cooling", guiActive = false, guiActiveUnfocused = false, unfocusedRange = 3f, externalToEVAOnly = true)]
         public void FixCooling()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
@@ -202,7 +207,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Kick the engine, producing a small chance the engine will be fixed without using spare parts, and a smaller chance the engine will just explode.
         /// </summary>
-        [KSPEvent(active = true, guiName = "Kick Cooling Pump", guiActive = false, guiActiveUnfocused = true, unfocusedRange = 3f, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiName = "Kick Cooling Pump", guiActive = false, guiActiveUnfocused = false, unfocusedRange = 3f, externalToEVAOnly = true)]
         public void KickCooling()
         {
             bashSound.audio.clip = SoundManager.GetSound("Hammer" + Random.Range(1, 7).ToString());
@@ -226,7 +231,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Breaks the cooling.
         /// </summary>
-        void BreakCooling()
+        void BreakCooling(bool display)
         {
             failure = "Cooling Failure";
 
@@ -235,7 +240,10 @@ namespace Kerbal_Mechanics
 
             rocketPartsLeftToFix = rocketPartsNeededToFix;
 
-            KMUtil.PostFailure(part, " has had a cooling system failure!");
+            if (display)
+            {
+                KMUtil.PostFailure(part, " has had a cooling system failure!");
+            }
         }
 
         /// <summary>
@@ -244,8 +252,8 @@ namespace Kerbal_Mechanics
         /// <param name="kicked">Reduces the amount of reliability returned to the fixed cooling if true.</param>
         public void FixCooling(bool kicked)
         {
-            Events["FixEngine"].guiActiveUnfocused = false;
-            Events["KickEngine"].guiActiveUnfocused = false;
+            Events["FixCooling"].guiActiveUnfocused = false;
+            Events["KickCooling"].guiActiveUnfocused = false;
 
             failure = "";
 

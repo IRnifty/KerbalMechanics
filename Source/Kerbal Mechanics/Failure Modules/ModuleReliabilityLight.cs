@@ -104,7 +104,7 @@ namespace Kerbal_Mechanics
 
             if (failure != "")
             {
-                BustBulb();
+                BustBulb(false);
             }
 
             Fields["quality"].guiName = "Light " + Fields["quality"].guiName;
@@ -151,7 +151,7 @@ namespace Kerbal_Mechanics
                 }
                 else
                 {
-                    BustBulb();
+                    BustBulb(true);
                 }
             }
 
@@ -222,13 +222,17 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Busts the light bulb.
         /// </summary>
-        void BustBulb()
+        void BustBulb(bool display)
         {
             isFlickering = false;
             mLight.LightsOff();
             rocketPartsLeftToFix = rocketPartsNeededToFix;
             failure = "Busted Light Bulb";
-            KMUtil.PostFailure(part, " has busted its light bulb.");
+
+            if (display)
+            {
+                KMUtil.PostFailure(part, " has busted its light bulb.");
+            }
         }
 
         /// <summary>

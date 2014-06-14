@@ -119,6 +119,11 @@ namespace Kerbal_Mechanics
             }
 
             Fields["quality"].guiName = "Ignitor " + Fields["quality"].guiName;
+
+            if (failure != "")
+            {
+                BreakIgnitor(false);
+            }
         }
 
         /// <summary>
@@ -141,7 +146,7 @@ namespace Kerbal_Mechanics
                     {
                         if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
                         {
-                            BreakIgnitor();
+                            BreakIgnitor(true);
                         }
                     }
 
@@ -166,7 +171,7 @@ namespace Kerbal_Mechanics
                     {
                         if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
                         {
-                            BreakIgnitor();
+                            BreakIgnitor(true);
                         }
                     }
 
@@ -189,7 +194,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Fixes the ignitor using spare parts.
         /// </summary>
-        [KSPEvent(active = true, guiName = "Repair Ignitor", guiActive = false, guiActiveUnfocused = true, unfocusedRange = 3f, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiName = "Repair Ignitor", guiActive = false, guiActiveUnfocused = false, unfocusedRange = 3f, externalToEVAOnly = true)]
         public void FixIgnitor()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
@@ -210,7 +215,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Kick the ignitor, producing a small chance the engine will be fixed without using spare parts, and a smaller chance the engine will just explode.
         /// </summary>
-        [KSPEvent(active = true, guiName = "Kick Ignitor", guiActive = false, guiActiveUnfocused = true, unfocusedRange = 3f, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiName = "Kick Ignitor", guiActive = false, guiActiveUnfocused = false, unfocusedRange = 3f, externalToEVAOnly = true)]
         public void KickIgnitor()
         {
             bashSound.audio.clip = SoundManager.GetSound("Hammer" + Random.Range(1, 7).ToString());
@@ -234,7 +239,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Breaks the ignitor.
         /// </summary>
-        void BreakIgnitor()
+        void BreakIgnitor(bool display)
         {
             failure = "Ignition Coil Burnt";
 
@@ -262,7 +267,10 @@ namespace Kerbal_Mechanics
 
             rocketPartsLeftToFix = rocketPartsNeededToFix;
 
-            KMUtil.PostFailure(part, "'s ignition coil has burnt up!");
+            if (display)
+            {
+                KMUtil.PostFailure(part, "'s ignition coil has burnt up!");
+            }
         }
 
         /// <summary>
@@ -288,8 +296,8 @@ namespace Kerbal_Mechanics
                 engineFX.Actions["ActivateAction"].active = true;
             }
 
-            Events["FixEngine"].guiActiveUnfocused = false;
-            Events["KickEngine"].guiActiveUnfocused = false;
+            Events["FixIgnitor"].guiActiveUnfocused = false;
+            Events["KickIgnitor"].guiActiveUnfocused = false;
 
             failure = "";
 

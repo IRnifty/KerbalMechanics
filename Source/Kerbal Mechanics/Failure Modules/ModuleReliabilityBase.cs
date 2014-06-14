@@ -15,14 +15,14 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// The quality of a part. This is tweaked by the player to determine price and reliability drain.
         /// </summary>
-        [KSPField(isPersistant = true)]
-        public float quality = 0.75f;
+        [KSPField(guiName = "Quality", guiActive = false, guiActiveEditor = false, isPersistant = true)]
+        public float quality = -1f;
 
         /// <summary>
         /// Reliability of the part. Determines the failure chance (between perfect and terrible).
         /// </summary>
-        [KSPField(isPersistant = true)]
-        public float reliability = 1f;
+        [KSPField(guiName = "Reliability", guiActive = false, guiActiveEditor = false, isPersistant = true)]
+        public float reliability = -1f;
 
         /// <summary>
         /// Is the part broken?
@@ -117,16 +117,24 @@ namespace Kerbal_Mechanics
         {
             base.OnStart(state);
 
-            reliability = 1f;
-
-            // Penalty for low quality parts.
-            if (quality < 0.5f)
+            if (quality == -1f)
             {
-                reliability -= 0.1f;
+                quality = 0.75f;
+            }
 
-                if (quality < 0.25f)
+            if (reliability == -1f)
+            {
+                reliability = 1f;
+
+                // Penalty for low quality parts.
+                if (quality < 0.5f)
                 {
                     reliability -= 0.1f;
+
+                    if (quality < 0.25f)
+                    {
+                        reliability -= 0.1f;
+                    }
                 }
             }
 

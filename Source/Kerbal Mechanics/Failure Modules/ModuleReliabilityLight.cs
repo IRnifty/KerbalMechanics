@@ -24,7 +24,7 @@ namespace Kerbal_Mechanics
         /// How many parts are needed while the light is flickering?
         /// </summary>
         [KSPField]
-        public int rocketPartsNeededFlickering = 10;
+        public int rocketPartsNeededFlickering = 5;
         #endregion
 
         //PROPERTIES
@@ -117,7 +117,11 @@ namespace Kerbal_Mechanics
         {
             if (mLight.isOn)
             {
-                if (timeSinceFailCheck < timeTillFailCheck)
+                if (failure == "Busted Light Bulb")
+                {
+                    mLight.LightsOff();
+                }
+                else if (timeSinceFailCheck < timeTillFailCheck)
                 {
                     timeSinceFailCheck += TimeWarp.deltaTime;
                 }
@@ -156,6 +160,8 @@ namespace Kerbal_Mechanics
             }
 
             reliability = Mathf.Max(reliability, 0f);
+
+            base.OnUpdate();
         }
         #endregion
 

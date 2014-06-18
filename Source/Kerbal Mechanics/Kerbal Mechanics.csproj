@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -67,7 +67,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\0.23\GameData\KerbalMechanics\Plugins\$(TargetFileName)"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\0.23\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
+xcopy "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\0.23\GameData\KerbalMechanics" "C:\Users\NIFTY\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
+copy /Y "C:\Users\NIFTY\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt" "C:\Users\NIFTY\Documents\GitHub\KerbalMechanics\README.md"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -7,26 +7,18 @@ namespace Kerbal_Mechanics
 {
     class ModuleReliabilityGimbal : ModuleReliabilityBase
     {
-        //CONSTANTS AND STATICS
-        #region CONSTANTS AND STATICS
-        /// <summary>
-        /// Time until the next running failure check.
-        /// </summary>
-        static readonly float timeTillFailCheck = 10f;
-        #endregion
-
         //KSP FIELDS
         #region KSP FIELDS
         /// <summary>
         /// Chance to fail while running under perfect conditions.
         /// </summary>
         [KSPField]
-        public float chanceToFailPerfect = 0.00001f;
+        public double chanceToFailPerfect = 0.00001f;
         /// <summary>
         /// Chance to fail while running under terrible conditions.
         /// </summary>
         [KSPField]
-        public float chanceToFailTerrible = 0.001f;
+        public double chanceToFailTerrible = 0.001f;
 
         /// <summary>
         /// The chance a kick will permenently lock the gimbal.
@@ -52,7 +44,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Gets the current running chance to fail, based on the current reliability.
         /// </summary>
-        public float CurrentChanceToFail
+        public double CurrentChanceToFail
         {
             get { return chanceToFailPerfect + ((chanceToFailTerrible - chanceToFailPerfect) * (1f - reliability)); }
         }
@@ -67,11 +59,6 @@ namespace Kerbal_Mechanics
 
         //OTHER VARS
         #region OTHER VARS
-        /// <summary>
-        /// Time since the last running failure check.
-        /// </summary>
-        float timeSinceFailCheck = 0f;
-
         /// <summary>
         /// The gimbal module of this engine. Null if no gimbal is attached.
         /// </summary>
@@ -92,7 +79,7 @@ namespace Kerbal_Mechanics
 
             if (!gimbal)
             {
-                Logger.DebugError("The gimbal module is NULL!");
+                Logger.DebugError("The gimbal module on \"" + part.partName + "\" is NULL!");
             }
 
             if (permanentLock)
@@ -108,25 +95,35 @@ namespace Kerbal_Mechanics
         /// </summary>
         public override void OnUpdate()
         {
-            base.OnUpdate();
-
-            if (gimbal && FlightInputHandler.state.mainThrottle > 0f)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                if (timeSinceFailCheck < timeTillFailCheck)
+                if (gimbal)
                 {
-                    timeSinceFailCheck += TimeWarp.deltaTime;
-                }
-                else
-                {
-                    timeSinceFailCheck = 0f;
-                    reliability -= CurrentReliabilityDrain;
-
-                    if (Random.Range(0f, 1f) < CurrentChanceToFail)
+                    if (FlightInputHandler.state.mainThrottle > 0f)
                     {
-                        BreakGimbal(true);
+                        if (timeSinceFailCheck < timeTillFailCheck)
+                        {
+                            timeSinceFailCheck += TimeWarp.deltaTime;
+                        }
+                        else
+                        {
+                            timeSinceFailCheck = 0f;
+                            reliability -= CurrentReliabilityDrain * 10;
+
+                            if (Random.Range(0f, 1f) < CurrentChanceToFail)
+                            {
+                                BreakGimbal(true);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        reliability -= CurrentReliabilityDrain;
                     }
                 }
             }
+
+            base.OnUpdate();
         }
         #endregion
 
@@ -166,6 +163,22 @@ namespace Kerbal_Mechanics
                 FixGimbal(false);
             }
         }
+
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]
+        public override void PerformMaintenance()
+        {
+            if (FlightGlobals.ActiveVessel.isEVA)
+            {
+                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
+
+                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 2));
+
+                fixSound.audio.Play();
+
+                reliability += 0.1;
+                reliability = reliability.Clamp(0, 1);
+            }
+        }
         #endregion
 
         //OTHER METHODS
@@ -176,17 +189,22 @@ namespace Kerbal_Mechanics
         /// <param name="display">Whether or not to post the failure.</param>
         void BreakGimbal (bool display)
         {
-            failure = "Gimbal Stuck";
-
-            gimbal.LockGimbal();
-            gimbal.Events["LockGimbal"].guiActive = false;
-            gimbal.Events["FreeGimbal"].guiActive = false;
-            gimbal.Actions["ToggleAction"].active = false;
-            rocketPartsLeftToFix = rocketPartsNeededToFix;
-
-            if (display)
+            if (!broken)
             {
-                KMUtil.PostFailure(part, "'s gimbal has frozen!");
+                failure = "Gimbal Stuck";
+
+                gimbal.LockGimbal();
+                gimbal.Events["LockGimbal"].guiActive = false;
+                gimbal.Events["FreeGimbal"].guiActive = false;
+                gimbal.Actions["ToggleAction"].active = false;
+                rocketPartsLeftToFix = rocketPartsNeededToFix;
+
+                if (display)
+                {
+                    KMUtil.PostFailure(part, "'s gimbal has frozen!");
+                }
+
+                broken = true;
             }
         }
 
@@ -204,6 +222,10 @@ namespace Kerbal_Mechanics
             gimbal.Actions["ToggleAction"].active = true;
 
             reliability += 0.2f - (kicked ? 1.5f : 0f);
+
+            reliability = reliability.Clamp(0, 1);
+
+            broken = false;
         }
 
         /// <summary>
@@ -223,7 +245,7 @@ namespace Kerbal_Mechanics
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label(KMUtil.FormatPercent(reliability, 2), HighLogic.Skin.label);
+            GUILayout.Label(reliability.ToString("##0.00%"), HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(KMUtil.FormatPercent(chanceToFailPerfect), HighLogic.Skin.label);

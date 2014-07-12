@@ -51,6 +51,7 @@ namespace Kerbal_Mechanics
             }
 
             rocketParts.flowMode = PartResource.FlowMode.Both;
+            part.fuelCrossFeed = false;
         }
 
         public override void OnUpdate()

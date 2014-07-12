@@ -10,26 +10,18 @@ namespace Kerbal_Mechanics
     /// </summary>
     class ModuleReliabilityCooling : ModuleReliabilityBase
     {
-        //CONSTANTS AND STATICS
-        #region CONSTANTS AND STATICS
-        /// <summary>
-        /// Time until the next running failure check.
-        /// </summary>
-        static readonly float timeTillFailCheck = 10f;
-        #endregion
-
-        //FAILURE CHANCES
-        #region FAILURE CHANCES
+         //KSP FIELDS
+        #region KSP FIELDS
         /// <summary>
         /// Chance to fail while running under perfect conditions
         /// </summary>
         [KSPField]
-        public float runningChanceToFailPerfect = 0.000001f;
+        public double runningChanceToFailPerfect = 0.000001f;
         /// <summary>
         /// Chance to fail while running under the worst of conditions
         /// </summary>
         [KSPField]
-        public float runningChanceToFailTerrible = 0.01f;
+        public double runningChanceToFailTerrible = 0.01f;
 
         /// <summary>
         /// Chance kicking the cooling will cause it to explode.
@@ -48,7 +40,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Gets the current running chance to fail, based on the current reliability.
         /// </summary>
-        public float CurrentRunningChanceToFail
+        public double CurrentRunningChanceToFail
         {
             get { return runningChanceToFailPerfect + ((runningChanceToFailTerrible - runningChanceToFailPerfect) * (1f - reliability)); }
         }
@@ -63,10 +55,6 @@ namespace Kerbal_Mechanics
 
         //OTHER VARS
         #region OTHER VARS
-        /// <summary>
-        /// Time since the last running failure check.
-        /// </summary>
-        float timeSinceFailCheck = 0f;
 
         /// <summary>
         /// The engine module of this part. Null if the engine module is of type ModuleEnginesFX.
@@ -89,31 +77,35 @@ namespace Kerbal_Mechanics
         {
             base.OnStart(state);
 
-            engine = part.Modules.OfType<ModuleEngines>().FirstOrDefault<ModuleEngines>();
-            if (!engine)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                engineFX = part.Modules.OfType<ModuleEnginesFX>().FirstOrDefault<ModuleEnginesFX>();
-
-                if (!engineFX)
+                engine = part.Modules.OfType<ModuleEngines>().FirstOrDefault<ModuleEngines>();
+                if (!engine)
                 {
-                    Logger.DebugError("Both engine and engineFX are NULL!");
+                    engineFX = part.Modules.OfType<ModuleEnginesFX>().FirstOrDefault<ModuleEnginesFX>();
+
+                    if (!engineFX)
+                    {
+                        Logger.DebugError("Part \"" + part.partName + "\" contains neither an engine or an engineFX module!");
+                        return;
+                    }
                 }
-            }
 
-            if (engine)
-            {
-                engine.Fields["status"].guiName = "Pump Status";
-            }
-            else if (engineFX)
-            {
-                engineFX.Fields["status"].guiName = "Pump Status";
-            }
+                if (engine)
+                {
+                    engine.Fields["status"].guiName = "Pump Status";
+                }
+                else if (engineFX)
+                {
+                    engineFX.Fields["status"].guiName = "Pump Status";
+                }
 
-            Fields["quality"].guiName = "Cooling System " + Fields["quality"].guiName;
+                Fields["quality"].guiName = "Cooling System " + Fields["quality"].guiName;
 
-            if (failure != "")
-            {
-                BreakCooling(false);
+                if (failure != "")
+                {
+                    BreakCooling(false);
+                }
             }
         }
 
@@ -122,62 +114,65 @@ namespace Kerbal_Mechanics
         /// </summary>
         public override void OnUpdate()
         {
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                if (engine)
+                {
+                    engine.staged = engine.EngineIgnited || engine.staged;
+
+                    if (engine.staged && failure == "")
+                    {
+                        if (timeSinceFailCheck < timeTillFailCheck)
+                        {
+                            timeSinceFailCheck += TimeWarp.deltaTime;
+                        }
+                        else
+                        {
+                            timeSinceFailCheck = 0f;
+                            reliability -= CurrentReliabilityDrain + ((CurrentReliabilityDrain * 9) * engine.currentThrottle);
+
+                            if (Random.Range(0f, 1f) < CurrentRunningChanceToFail && engine.currentThrottle > 0f)
+                            {
+                                BreakCooling(true);
+                            }
+                        }
+                    }
+
+                    if (failure != "")
+                    {
+                        part.temperature += engine.heatProduction * engine.currentThrottle * TimeWarp.deltaTime;
+                    }
+                }
+                else if (engineFX)
+                {
+                    engineFX.staged = engineFX.EngineIgnited || engineFX.staged;
+
+                    if (engineFX.staged && failure == "")
+                    {
+                        if (timeSinceFailCheck < timeTillFailCheck)
+                        {
+                            timeSinceFailCheck += TimeWarp.deltaTime;
+                        }
+                        else
+                        {
+                            timeSinceFailCheck = 0f;
+                            reliability -= CurrentReliabilityDrain + ((CurrentReliabilityDrain * 9) * engineFX.currentThrottle);
+
+                            if (Random.Range(0f, 1f) < CurrentRunningChanceToFail && engineFX.currentThrottle > 0f)
+                            {
+                                BreakCooling(true);
+                            }
+                        }
+                    }
+
+                    if (failure != "")
+                    {
+                        part.temperature += engineFX.heatProduction * engineFX.currentThrottle * TimeWarp.deltaTime;
+                    }
+                }
+            }
+
             base.OnUpdate();
-
-            if (engine)
-            {
-                engine.staged = engine.EngineIgnited || engine.staged;
-
-                if (engine.EngineIgnited && failure == "" && engine.currentThrottle > 0f)
-                {
-                    if (timeSinceFailCheck < timeTillFailCheck)
-                    {
-                        timeSinceFailCheck += TimeWarp.deltaTime;
-                    }
-                    else
-                    {
-                        timeSinceFailCheck = 0f;
-                        reliability -= CurrentReliabilityDrain * engine.currentThrottle;
-
-                        if (Random.Range(0f, 1f) < CurrentRunningChanceToFail)
-                        {
-                            BreakCooling(true);
-                        }
-                    }
-                }
-
-                if (failure != "")
-                {
-                    part.temperature += engine.heatProduction * engine.currentThrottle * TimeWarp.deltaTime;
-                }
-            }
-            else if (engineFX)
-            {
-                engineFX.staged = engineFX.EngineIgnited || engineFX.staged;
-
-                if (engineFX.EngineIgnited && failure == "" && engineFX.currentThrottle > 0f)
-                {
-                    if (timeSinceFailCheck < timeTillFailCheck)
-                    {
-                        timeSinceFailCheck += TimeWarp.deltaTime;
-                    }
-                    else
-                    {
-                        timeSinceFailCheck = 0f;
-                        reliability -= CurrentReliabilityDrain * engineFX.currentThrottle;
-
-                        if (Random.Range(0f, 1f) < CurrentRunningChanceToFail)
-                        {
-                            BreakCooling(true);
-                        }
-                    }
-                }
-
-                if (failure != "")
-                {
-                    part.temperature += engineFX.heatProduction * engineFX.currentThrottle * TimeWarp.deltaTime;
-                }
-            }
         }
         #endregion
 
@@ -224,6 +219,22 @@ namespace Kerbal_Mechanics
                 FixCooling(true);
             }
         }
+
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]
+        public override void PerformMaintenance()
+        {
+            if (FlightGlobals.ActiveVessel.isEVA)
+            {
+                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
+
+                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 2));
+
+                fixSound.audio.Play();
+
+                reliability += 0.1;
+                reliability = reliability.Clamp(0, 1);
+            }
+        }
         #endregion
 
         // OTHER METHODS
@@ -233,16 +244,21 @@ namespace Kerbal_Mechanics
         /// </summary>
         void BreakCooling(bool display)
         {
-            failure = "Cooling Failure";
-
-            Events["FixCooling"].guiActiveUnfocused = true;
-            Events["KickCooling"].guiActiveUnfocused = true;
-
-            rocketPartsLeftToFix = rocketPartsNeededToFix;
-
-            if (display)
+            if (!broken)
             {
-                KMUtil.PostFailure(part, " has had a cooling system failure!");
+                failure = "Cooling Failure";
+
+                Events["FixCooling"].guiActiveUnfocused = true;
+                Events["KickCooling"].guiActiveUnfocused = true;
+
+                rocketPartsLeftToFix = rocketPartsNeededToFix;
+
+                if (display)
+                {
+                    KMUtil.PostFailure(part, " has had a cooling system failure!");
+                }
+
+                broken = true;
             }
         }
 
@@ -259,7 +275,9 @@ namespace Kerbal_Mechanics
 
             reliability += 0.2f - (kicked ? 0f : 0.15f);
 
-            reliability = Mathf.Min(reliability, 1f);
+            reliability = reliability.Clamp(0, 1);
+
+            broken = false;
         }
 
         /// <summary>
@@ -279,7 +297,7 @@ namespace Kerbal_Mechanics
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label(reliability.ToString("##0.#%"), HighLogic.Skin.label);
+            GUILayout.Label(reliability.ToString("##0.00%"), HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(runningChanceToFailPerfect.ToString("##0.#####%"), HighLogic.Skin.label);

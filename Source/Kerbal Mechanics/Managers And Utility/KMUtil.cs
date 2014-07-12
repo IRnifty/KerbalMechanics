@@ -6,6 +6,16 @@ using UnityEngine;
 
 namespace Kerbal_Mechanics
 {
+    static class KMUtilStatic
+    {
+        public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
+        {
+            if (val.CompareTo(min) < 0) return min;
+            else if (val.CompareTo(max) > 0) return max;
+            else return val;
+        }
+    }
+
     class KMUtil
     {
         /// <summary>
@@ -55,12 +65,24 @@ namespace Kerbal_Mechanics
             Vector2 p1 = GetCasteljauPoint(points, r - 1, i, t);
             Vector2 p2 = GetCasteljauPoint(points, r - 1, i + 1, t);
 
-            return new Vector2((int)((1 - t) * p1.x + t * p2.x), (int)((1 - t) * p1.y + t * p2.y));
+            //return new Vector2((float)((1 - t) * p1.x + t * p2.x), (float)((1 - t) * p1.y + t * p2.y));
+            return Vector2.Lerp(p1, p2, (float)t);
         }
 
-        public static Vector2 GetPointBetweenLine(Vector2 point1, Vector2 point2, float percent)
+        public static Vector2d GetPointOnCurve(Vector2d[] curve, float percent)
         {
-            return point1 + ((point2 - point1) * percent);
+            return GetCasteljauPoint(curve, curve.Length - 1, 0, percent);
+        }
+
+        private static Vector2d GetCasteljauPoint(Vector2d[] points, int r, int i, double t)
+        {
+            if (r == 0) { return points[i]; }
+
+            Vector2d p1 = GetCasteljauPoint(points, r - 1, i, t);
+            Vector2d p2 = GetCasteljauPoint(points, r - 1, i + 1, t);
+
+            //return new Vector2d((1 - t) * p1.x + t * p2.x, (1 - t) * p1.y + t * p2.y);
+            return Vector2d.Lerp(p1, p2, (float)t);
         }
 
         public static bool IsFlagSet<T>(T flags, T flag) where T : struct
@@ -87,7 +109,7 @@ namespace Kerbal_Mechanics
             flags = (T)(object)(flagsValue & (~flagValue));
         }
 
-        public static string FormatPercent(float val)
+        public static string FormatPercent(double val)
         {
             string toRet = val.ToString("P10");
 
@@ -103,7 +125,7 @@ namespace Kerbal_Mechanics
             return toRet + "%";
         }
 
-        public static string FormatPercent(float val, int decimalCutoff)
+        public static string FormatPercent(double val, int decimalCutoff)
         {
             string toRet = val.ToString("P" + decimalCutoff.ToString());
 

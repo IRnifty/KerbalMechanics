@@ -12,6 +12,8 @@
     <AssemblyName>Kerbal Mechanics</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -49,14 +53,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AltimeterList.cs" />
+    <Compile Include="CurveTester.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityTank.cs" />
+    <Compile Include="Managers And Utility\EditorLoader.cs" />
+    <Compile Include="Managers And Utility\FlightLoader.cs" />
+    <Compile Include="Managers And Utility\InstrumentReliabilityManager.cs" />
     <Compile Include="Managers And Utility\ModuleInjector.cs" />
     <Compile Include="Managers And Utility\KMUtil.cs" />
     <Compile Include="Managers And Utility\Logger.cs" />
     <Compile Include="Managers And Utility\ModuleInjectorPreStart.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityCooling.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityGimbal.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityAltimeter.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityAlternator.cs" />
     <Compile Include="ModuleReliabilityManager.cs" />
-    <Compile Include="Failure Modules\ModuleReliabilityBase.cs" />
+    <Compile Include="ModuleReliabilityBase.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityDecoupler.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityIgnitor.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityLight.cs" />
@@ -65,11 +77,28 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers And Utility\StyleManager.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cfgs\Blacklist.cfg" />
+    <None Include="cfgs\Injections.cfg" />
+    <None Include="cfgs\Resources\RocketPartsFromExLaunchpad.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Misc\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\0.23\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
-xcopy "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\0.23\GameData\KerbalMechanics" "C:\Users\NIFTY\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
-copy /Y "C:\Users\NIFTY\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt" "C:\Users\NIFTY\Documents\GitHub\KerbalMechanics\README.md"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.23.5\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
+
+xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.23.5\GameData\KerbalMechanics" /S /E /Y
+
+xcopy "D:\KSP Test Folder\0.23.5\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
+
+copy /Y "D:\Documents\GitHub\KerbalMechanics\Source\Kerbal Mechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt"
+
+copy /Y "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\README.md"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

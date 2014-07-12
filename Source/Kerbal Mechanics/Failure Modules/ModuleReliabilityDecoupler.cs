@@ -67,41 +67,43 @@ namespace Kerbal_Mechanics
         {
             base.OnStart(state);
 
-            GameEvents.onStageActivate.Add(new EventData<int>.OnEvent(DetermineFailure));
-
-            decoupler = part.Modules.OfType<ModuleDecouple>().FirstOrDefault<ModuleDecouple>();
-
-            if (!decoupler)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                aDecoupler = part.Modules.OfType<ModuleAnchoredDecoupler>().FirstOrDefault<ModuleAnchoredDecoupler>();
-            }
+                GameEvents.onStageActivate.Add(new EventData<int>.OnEvent(DetermineFailure));
 
-            if (decoupler)
-            {
-                if (failure != "")
+                decoupler = part.Modules.OfType<ModuleDecouple>().FirstOrDefault<ModuleDecouple>();
+
+                if (!decoupler)
                 {
-                    decoupler.isDecoupled = true;
+                    aDecoupler = part.Modules.OfType<ModuleAnchoredDecoupler>().FirstOrDefault<ModuleAnchoredDecoupler>();
                 }
-                decoupler.Events["Decouple"].active = false;
-                decoupler.Actions["DecoupleAction"].active = false;
-            }
-            else if (aDecoupler)
-            {
-                if (failure != "")
+
+                if (decoupler)
                 {
-                    aDecoupler.isDecoupled = true;
+                    if (failure != "")
+                    {
+                        decoupler.isDecoupled = true;
+                    }
+                    decoupler.Events["Decouple"].active = false;
+                    decoupler.Actions["DecoupleAction"].active = false;
                 }
-                aDecoupler.Events["Decouple"].active = false;
-                aDecoupler.Actions["DecoupleAction"].active = false;
-            }
-            else
-            {
-                Logger.DebugError("Both decoupler and aDeroupler are NULL!");
-            }
+                else if (aDecoupler)
+                {
+                    if (failure != "")
+                    {
+                        aDecoupler.isDecoupled = true;
+                    }
+                    aDecoupler.Events["Decouple"].active = false;
+                    aDecoupler.Actions["DecoupleAction"].active = false;
+                }
+                else
+                {
+                    Logger.DebugError("Part \"" + part.partName + "\" contains neither a decouple or anchored decoupler module!");
+                    return;
+                }
 
-            Fields["reliability"].guiActive = false;
-
-            Fields["quality"].guiName = "Decoupler " + Fields["quality"].guiName;
+                Fields["reliability"].guiActive = false;
+            }
         }
         #endregion
 
@@ -194,6 +196,12 @@ namespace Kerbal_Mechanics
         {
             DetermineFailure(-1);
         }
+
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = false, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]
+        public override void PerformMaintenance()
+        {
+            
+        }
         #endregion
 
         //OTHER METHODS
@@ -204,40 +212,43 @@ namespace Kerbal_Mechanics
         /// <param name="stage">The stage on which this method was called. -1 if called by an action group.</param>
         void DetermineFailure(int stage)
         {
-            if ((stage == part.inverseStage || stage == -1) && FlightGlobals.ActiveVessel == vessel && failure == "")
+            if (decoupler || aDecoupler)
             {
-                float rand = Random.Range(0f, 1f);
+                if ((stage == part.inverseStage || stage == -1) && FlightGlobals.ActiveVessel == vessel && failure == "")
+                {
+                    float rand = Random.Range(0f, 1f);
 
-                if (rand < chanceOfExplosion / Mathf.Clamp01(quality / 0.75f))
-                {
-                    part.explode();
-                    KMUtil.PostFailure(part, " has exploded due to improper detonator rigging.");
-                }
-                else if (rand < chanceOfNothing / Mathf.Clamp01(quality / 0.75f))
-                {
-                    if (decoupler)
+                    if (rand < chanceOfExplosion / Mathf.Clamp01(quality / 0.75f))
                     {
-                        decoupler.isDecoupled = true;
+                        part.explode();
+                        KMUtil.PostFailure(part, " has exploded due to improper detonator rigging.");
                     }
-                    else if (aDecoupler)
+                    else if (rand < chanceOfNothing / Mathf.Clamp01(quality / 0.75f))
                     {
-                        aDecoupler.isDecoupled = true;
-                    }
+                        if (decoupler)
+                        {
+                            decoupler.isDecoupled = true;
+                        }
+                        else if (aDecoupler)
+                        {
+                            aDecoupler.isDecoupled = true;
+                        }
 
-                    Events["Decouple"].active = true;
-                    rocketPartsLeftToFix = rocketPartsNeededToFix;
-                    failure = "Decouple failure";
-                    KMUtil.PostFailure(part, " failed to decouple due to improper explosive rigging.");
-                }
-                else if (stage == -1)
-                {
-                    if (decoupler)
-                    {
-                        decoupler.Decouple();
+                        Events["Decouple"].active = true;
+                        rocketPartsLeftToFix = rocketPartsNeededToFix;
+                        failure = "Decouple failure";
+                        KMUtil.PostFailure(part, " failed to decouple due to improper explosive rigging.");
                     }
-                    else if (aDecoupler)
+                    else if (stage == -1)
                     {
-                        aDecoupler.Decouple();
+                        if (decoupler)
+                        {
+                            decoupler.Decouple();
+                        }
+                        else if (aDecoupler)
+                        {
+                            aDecoupler.Decouple();
+                        }
                     }
                 }
             }

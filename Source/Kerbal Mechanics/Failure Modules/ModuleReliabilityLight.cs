@@ -13,12 +13,12 @@ namespace Kerbal_Mechanics
         /// Chance to fail while running under perfect conditions
         /// </summary>
         [KSPField]
-        public float chanceToFailPerfect = 0.000001f;
+        public double chanceToFailPerfect = 0.00001f;
         /// <summary>
         /// Chance to fail while running under the worst of conditions
         /// </summary>
         [KSPField]
-        public float chanceToFailTerrible = 0.01f;
+        public double chanceToFailTerrible = 0.001f;
 
         /// <summary>
         /// How many parts are needed while the light is flickering?
@@ -32,7 +32,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Gets the current running chance to fail, based on the current reliability.
         /// </summary>
-        public float CurrentChanceToFail
+        public double CurrentChanceToFail
         {
             get { return chanceToFailPerfect + ((chanceToFailTerrible - chanceToFailPerfect) * (1f - reliability)); }
         }
@@ -71,15 +71,6 @@ namespace Kerbal_Mechanics
         float currentFlickerTime = 0f;
 
         /// <summary>
-        /// The time since the last failure check.
-        /// </summary>
-        float timeSinceFailCheck = 0f;
-        /// <summary>
-        /// The time until the next failure check.
-        /// </summary>
-        float timeTillFailCheck = 5f;
-
-        /// <summary>
         /// The light module.
         /// </summary>
         ModuleLight mLight;
@@ -95,19 +86,22 @@ namespace Kerbal_Mechanics
         {
             base.OnStart(state);
 
-            mLight = part.Modules.OfType<ModuleLight>().FirstOrDefault<ModuleLight>();
-
-            if (!mLight)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                Logger.DebugError("mLight is NULL!");
-            }
+                mLight = part.Modules.OfType<ModuleLight>().FirstOrDefault<ModuleLight>();
 
-            if (failure != "")
-            {
-                BustBulb(false);
-            }
+                if (!mLight)
+                {
+                    Logger.DebugError("mLight is NULL!");
+                }
 
-            Fields["quality"].guiName = "Light " + Fields["quality"].guiName;
+                if (failure != "")
+                {
+                    BustBulb(false);
+                }
+
+                Fields["quality"].guiName = "Light " + Fields["quality"].guiName;
+            }
         }
 
         /// <summary>
@@ -115,51 +109,52 @@ namespace Kerbal_Mechanics
         /// </summary>
         public override void OnUpdate()
         {
-            if (mLight.isOn)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                if (failure == "Busted Light Bulb")
+                if (mLight.isOn)
                 {
-                    mLight.LightsOff();
-                }
-                else if (timeSinceFailCheck < timeTillFailCheck)
-                {
-                    timeSinceFailCheck += TimeWarp.deltaTime;
-                }
-                else
-                {
-                    timeSinceFailCheck = 0f;
-                    reliability -= CurrentReliabilityDrain;
-
-                    if (Random.Range(0f, 1f) < CurrentChanceToFail)
+                    if (failure == "Busted Light Bulb")
                     {
-                        BeginFlickering();
+                        mLight.LightsOff();
+                    }
+                    else if (timeSinceFailCheck < timeTillFailCheck)
+                    {
+                        timeSinceFailCheck += TimeWarp.deltaTime;
+                    }
+                    else
+                    {
+                        timeSinceFailCheck = 0f;
+                        reliability -= CurrentReliabilityDrain;
+
+                        if (Random.Range(0f, 1f) < CurrentChanceToFail)
+                        {
+                            BeginFlickering();
+                        }
+                    }
+                }
+
+                if (isFlickering)
+                {
+                    if (currentFlickerTime < maxFlickerTime)
+                    {
+                        currentFlickerTime += TimeWarp.deltaTime;
+                    }
+                    else
+                    {
+                        currentFlickerTime = 0f;
+                        FlickerBulb();
+                    }
+
+                    if (currentOverallFlickeringTime < maxOverallFlickeringTime)
+                    {
+                        currentOverallFlickeringTime += TimeWarp.deltaTime;
+                    }
+                    else
+                    {
+                        BustBulb(true);
                     }
                 }
             }
-
-            if (isFlickering)
-            {
-                if (currentFlickerTime < maxFlickerTime)
-                {
-                    currentFlickerTime += TimeWarp.deltaTime;
-                }
-                else
-                {
-                    currentFlickerTime = 0f;
-                    FlickerBulb();
-                }
-
-                if (currentOverallFlickeringTime < maxOverallFlickeringTime)
-                {
-                    currentOverallFlickeringTime += TimeWarp.deltaTime;
-                }
-                else
-                {
-                    BustBulb(true);
-                }
-            }
-
-            reliability = Mathf.Max(reliability, 0f);
 
             base.OnUpdate();
         }
@@ -187,8 +182,16 @@ namespace Kerbal_Mechanics
                     mLight.Events["LightsOn"].guiActive = true;
 
                     reliability = 1f;
+
+                    broken = false;
                 }
             }
+        }
+
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = false, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]
+        public override void PerformMaintenance()
+        {
+            
         }
         #endregion
 
@@ -199,13 +202,17 @@ namespace Kerbal_Mechanics
         /// </summary>
         void BeginFlickering()
         {
-            maxOverallFlickeringTime = Random.Range(5f, 30f);
-            mLight.Events["LightsOff"].guiActive = false;
-            mLight.Events["LightsOn"].guiActive = false;
-            rocketPartsLeftToFix = rocketPartsNeededFlickering;
-            isFlickering = true;
-            failure = "Flickering Light Bulb";
-            KMUtil.PostFailure(part, "'s light has begun flickering. Replace soon.");
+            if (!broken)
+            {
+                maxOverallFlickeringTime = Random.Range(5f, 30f);
+                mLight.Events["LightsOff"].guiActive = false;
+                mLight.Events["LightsOn"].guiActive = false;
+                rocketPartsLeftToFix = rocketPartsNeededFlickering;
+                isFlickering = true;
+                failure = "Flickering Light Bulb";
+                KMUtil.PostFailure(part, "'s light has begun flickering. Replace soon.");
+                broken = true;
+            }
         }
 
         /// <summary>
@@ -239,6 +246,8 @@ namespace Kerbal_Mechanics
             {
                 KMUtil.PostFailure(part, " has busted its light bulb.");
             }
+
+            broken = true;
         }
 
         /// <summary>

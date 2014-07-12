@@ -62,8 +62,6 @@ namespace Kerbal_Mechanics
 
             showingGUI = false;
             Events["ShowGUI"].active = true;
-
-            StartCoroutine("PostStart");
         }
 
         /// <summary>

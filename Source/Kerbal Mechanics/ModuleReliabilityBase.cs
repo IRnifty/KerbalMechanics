@@ -10,24 +10,32 @@ namespace Kerbal_Mechanics
     /// </summary>
     abstract class ModuleReliabilityBase : PartModule
     {
+        //CONSTANTS AND STATICS
+        #region CONSTANTS AND STATICS
+        /// <summary>
+        /// Time until the next running failure check.
+        /// </summary>
+        protected static readonly float timeTillFailCheck = 10f;
+        #endregion
+
         //KSP FIELDS
         #region KSP FIELDS
         /// <summary>
         /// The quality of a part. This is tweaked by the player to determine price and reliability drain.
         /// </summary>
-        [KSPField(guiName = "Quality", guiActive = false, guiActiveEditor = false, isPersistant = true)]
+        [KSPField(isPersistant = true)]
         public float quality = -1f;
 
         /// <summary>
         /// Reliability of the part. Determines the failure chance (between perfect and terrible).
         /// </summary>
-        [KSPField(guiName = "Reliability", guiActive = false, guiActiveEditor = false, isPersistant = true)]
-        public float reliability = -1f;
+        [KSPField(isPersistant = true)]
+        public double reliability = -1f;
 
         /// <summary>
         /// Is the part broken?
         /// </summary>
-        [KSPField(guiName = "Failure", guiActive = false, guiActiveEditor = false, isPersistant = true)]
+        [KSPField(isPersistant = true)]
         public string failure = "";
 
         /// <summary>
@@ -39,7 +47,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// How many rocket parts are still needed to fix this part?
         /// </summary>
-        [KSPField(guiName = "Parts Needed", guiActive = false, guiActiveEditor = false, isPersistant = true)]
+        [KSPField(isPersistant = true)]
         public int rocketPartsLeftToFix = 50;
 
         /// <summary>
@@ -66,13 +74,13 @@ namespace Kerbal_Mechanics
         /// The reliability drain of this part while running perfectly (100% quality).
         /// </summary>
         [KSPField]
-        public float reliabilityDrainPerfect = 0.001f;
+        public int reliabilityDrainPerfect = 425;
 
         /// <summary>
         /// The reliability drain of this part while running terribly (0% quality).
         /// </summary>
         [KSPField]
-        public float reliabilityDrainTerrible = 0.025f;
+        public int reliabilityDrainTerrible = 43;
         #endregion
         #endregion
 
@@ -81,21 +89,40 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Gets the current reliability drain enacted on this part, based on the quality.
         /// </summary>
-        public float CurrentReliabilityDrain
+        public double CurrentReliabilityDrain
         {
-            get { return reliabilityDrainPerfect + ((reliabilityDrainTerrible - reliabilityDrainPerfect) * (1f - quality)); }
+            get
+            {
+                double days =  KMUtil.GetPointOnCurve(reliabilityCurve, quality).y;
+
+                return (double)(1 / (days * 2165.08));
+            }
         }
         /// <summary>
         /// The name of the module. Held for use by the module injecter.
         /// </summary>
-        public virtual string ModuleName
+        public abstract string ModuleName
         {
-            get { return "Reliability"; }
+            get;
         }
         #endregion
 
         //OTHER VARS
         #region OTHER VARS
+        /// <summary>
+        /// Time since the last running failure check.
+        /// </summary>
+        protected float timeSinceFailCheck = 0f;
+
+        /// <summary>
+        /// The g force experienced last frame.
+        /// </summary>
+        private double lastGeeForce = 0.0;
+        /// <summary>
+        /// The change in g force experienced this frame.
+        /// </summary>
+        protected double deltaGeeForce = 0.0;
+
         /// <summary>
         /// The fix sound.
         /// </summary>
@@ -105,6 +132,16 @@ namespace Kerbal_Mechanics
         /// The bash sound.
         /// </summary>
         protected FXGroup bashSound;
+
+        /// <summary>
+        /// The list of points used for creating a reliability curve.
+        /// </summary>
+        private Vector2d[] reliabilityCurve;
+
+        /// <summary>
+        /// Is the part officially broken?
+        /// </summary>
+        protected bool broken = false;
         #endregion
 
         //KSP METHODS
@@ -138,6 +175,11 @@ namespace Kerbal_Mechanics
                 }
             }
 
+            reliabilityCurve = new Vector2d[] { new Vector2d(0, reliabilityDrainTerrible),
+			new Vector2d(0.75, reliabilityDrainTerrible),
+			new Vector2d(0.25, reliabilityDrainPerfect),
+			new Vector2d(1, reliabilityDrainPerfect) };
+
             SoundManager.LoadSound(KMUtil.soundSource + "Fix", "Fix");
 
             fixSound = new FXGroup("fixSound");
@@ -159,28 +201,45 @@ namespace Kerbal_Mechanics
         {
             base.OnUpdate();
 
-            Fields["failure"].guiActive = (failure != "");
-
-            if (failure != "")
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                Events["UnfocusedFailure"].active = true;
-                Events["UnfocusedFailure"].guiName = "Failure: " + failure;
+                deltaGeeForce = System.Math.Abs(lastGeeForce - vessel.geeForce);
+                lastGeeForce = vessel.geeForce;
 
-                Events["UnfocusedPartsNeeded"].active = true;
-                Events["UnfocusedPartsNeeded"].guiName = "Parts Needed: " + rocketPartsLeftToFix.ToString();
-            }
-            else
-            {
-                Events["UnfocusedFailure"].active = false;
-                Events["UnfocusedPartsNeeded"].active = false;
-            }
+                Fields["failure"].guiActive = (failure != "");
 
-            reliability = Mathf.Max(reliability, 0f);
+                if (failure != "")
+                {
+                    Events["UnfocusedFailure"].active = true;
+                    Events["UnfocusedFailure"].guiName = "Failure: " + failure;
+
+                    Events["UnfocusedPartsNeeded"].active = true;
+                    Events["UnfocusedPartsNeeded"].guiName = "Parts Needed: " + rocketPartsLeftToFix.ToString();
+
+                    Events["PerformMaintenance"].active = false;
+                }
+                else
+                {
+                    Events["UnfocusedFailure"].active = false;
+                    Events["UnfocusedPartsNeeded"].active = false;
+                    Events["PerformMaintenance"].active = true;
+                }
+
+                reliability = reliability.Clamp(0, 1);
+            }
         }
+        #endregion
+
+        //KSP EVENTS
+        #region KSP EVENTS
+        public abstract void PerformMaintenance();
         #endregion
 
         //OTHER METHODS
         #region OTHER METHODS
+        /// <summary>
+        /// Abstract. Requires child classes to implement a method which provides reliability information about the module.
+        /// </summary>
         public abstract void DisplayDesc();
         #endregion
     }

@@ -19,9 +19,13 @@ namespace Kerbal_Mechanics
                 injection.moduleInjections.Add("ModuleReliabilityIgnitor", new ModuleInjection(AddIgnitor));
                 injection.moduleInjections.Add("ModuleReliabilityCooling", new ModuleInjection(AddCooling));
                 injection.moduleInjections.Add("ModuleReliabilityGimbal", new ModuleInjection(AddGimbal));
+                injection.moduleInjections.Add("ModuleReliabilityAlternator", new ModuleInjection(AddAlternator));
                 injection.moduleInjections.Add("ModuleReliabilityDecoupler", new ModuleInjection(AddDecoupler));
                 injection.moduleInjections.Add("ModuleReliabilityLight", new ModuleInjection(AddLight));
+                injection.moduleInjections.Add("ModuleReliabilityTank", new ModuleInjection(AddTank));
                 injection.resourceInjections.Add("RocketParts", new ModuleInjection(AddRocketParts));
+
+                injection.moduleInjections.Add("ModuleReliabilityAltimeter", new ModuleInjection(AddAltimeter));
 
                 ConfigNode node = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/KerbalMechanics/Injections.cfg") ?? new ConfigNode();
                 InjectModules(node);
@@ -216,6 +220,35 @@ namespace Kerbal_Mechanics
             if (node.HasValue("chanceKickWillFix")) { rModule.chanceKickWillFix = float.Parse(node.GetValue("chanceKickWillFix")); }
         }
 
+        void AddAlternator(ConfigNode node, AvailablePart aPart)
+        {
+            // Get or add module
+            ModuleReliabilityAlternator rModule = aPart.partPrefab.GetComponent<ModuleReliabilityAlternator>();
+            if (rModule)
+            {
+                Logger.DebugWarning("ModuleReliabilityAlternator already added to \"" + aPart.name + "\"!");
+            }
+            else
+            {
+                rModule = aPart.partPrefab.AddModule("ModuleReliabilityAlternator") as ModuleReliabilityAlternator;
+                if (!rModule)
+                {
+                    Logger.DebugError("Problem adding module to engine!");
+                    return;
+                }
+            }
+
+            //Configure the base values
+            ConfigureBaseValues(node, rModule);
+
+            if (node.HasValue("idleChanceToFailPerfect")) { rModule.idleChanceToFailPerfect = double.Parse(node.GetValue("idleChanceToFailPerfect")); }
+            if (node.HasValue("idleChanceToFailTerrible")) { rModule.idleChanceToFailTerrible = double.Parse(node.GetValue("idleChanceToFailTerrible")); }
+            if (node.HasValue("stressedChanceToFailPerfect")) { rModule.stressedChanceToFailPerfect = double.Parse(node.GetValue("stressedChanceToFailPerfect")); }
+            if (node.HasValue("stressedChanceToFailTerrible")) { rModule.stressedChanceToFailTerrible = double.Parse(node.GetValue("stressedChanceToFailTerrible")); }
+            if (node.HasValue("maxGeesPerfect")) { rModule.maxGeesPerfect = double.Parse(node.GetValue("maxGeesPerfect")); }
+            if (node.HasValue("maxGeesTerrible")) { rModule.maxGeesTerrible = double.Parse(node.GetValue("maxGeesTerrible")); }
+        }
+
         void AddDecoupler(ConfigNode node, AvailablePart aPart)
         {
             // Get or add module
@@ -249,14 +282,14 @@ namespace Kerbal_Mechanics
             ModuleReliabilityLight rModule = aPart.partPrefab.GetComponent<ModuleReliabilityLight>();
             if (rModule)
             {
-                Logger.DebugWarning("ModuleReliabilityDecoupler already added to \"" + aPart.name + "\"!");
+                Logger.DebugWarning("ModuleReliabilityLight already added to \"" + aPart.name + "\"!");
             }
             else
             {
                 rModule = aPart.partPrefab.AddModule("ModuleReliabilityLight") as ModuleReliabilityLight;
                 if (!rModule)
                 {
-                    Logger.DebugError("Problem adding module to decoupler!");
+                    Logger.DebugError("Problem adding module to light!");
                     return;
                 }
             }
@@ -267,6 +300,57 @@ namespace Kerbal_Mechanics
             if (node.HasValue("chanceToFailPerfect")) { rModule.chanceToFailPerfect = float.Parse(node.GetValue("chanceToFailPerfect")); }
             if (node.HasValue("chanceToFailTerrible")) { rModule.chanceToFailTerrible = float.Parse(node.GetValue("chanceToFailTerrible")); }
             if (node.HasValue("rocketPartsNeededFlickering")) { rModule.rocketPartsNeededFlickering = int.Parse(node.GetValue("rocketPartsNeededFlickering")); }
+        }
+
+        void AddTank(ConfigNode node, AvailablePart aPart)
+        {
+            // Get or add module
+            ModuleReliabilityTank rModule = aPart.partPrefab.GetComponent<ModuleReliabilityTank>();
+            if (rModule)
+            {
+                Logger.DebugWarning("ModuleReliabilityTank already added to \"" + aPart.name + "\"!");
+            }
+            else
+            {
+                rModule = aPart.partPrefab.AddModule("ModuleReliabilityTank") as ModuleReliabilityTank;
+                if (!rModule)
+                {
+                    Logger.DebugError("Problem adding module to tank!");
+                    return;
+                }
+            }
+
+            //Configure the base values
+            ConfigureBaseValues(node, rModule);
+
+            if (node.HasValue("chanceToFailPerfect")) { rModule.chanceToFailPerfect = float.Parse(node.GetValue("chanceToFailPerfect")); }
+            if (node.HasValue("chanceToFailTerrible")) { rModule.chanceToFailTerrible = float.Parse(node.GetValue("chanceToFailTerrible")); }
+            if (node.HasValue("maxTC")) { rModule.maxTC = float.Parse(node.GetValue("maxTC")); }
+            if (node.HasValue("minTC")) { rModule.minTC = float.Parse(node.GetValue("minTC")); }
+        }
+
+        void AddAltimeter (ConfigNode node, AvailablePart aPart)
+        {
+            // Get or add module
+            ModuleReliabilityAltimeter rModule = aPart.partPrefab.GetComponent<ModuleReliabilityAltimeter>();
+            if (rModule)
+            {
+                Logger.DebugWarning("ModuleReliabilityAltimeter already added to \"" + aPart.name + "\"!");
+            }
+            else
+            {
+                rModule = aPart.partPrefab.AddModule("ModuleReliabilityAltimeter") as ModuleReliabilityAltimeter;
+                if (!rModule)
+                {
+                    Logger.DebugError("Problem adding module to command pod!");
+                    return;
+                }
+            }
+
+            if (node.HasValue("chanceToFailPerfect")) { rModule.chanceToFailPerfect = double.Parse(node.GetValue("chanceToFailPerfect")); }
+            if (node.HasValue("chanceToFailTerrible")) { rModule.chanceToFailTerrible = double.Parse(node.GetValue("chanceToFailTerrible")); }
+            if (node.HasValue("maxGeesPerfect")) { rModule.maxGeesPerfect = double.Parse(node.GetValue("maxGeesPerfect")); }
+            if (node.HasValue("maxGeesTerrible")) { rModule.maxGeesTerrible = double.Parse(node.GetValue("maxGeesTerrible")); }
         }
 
         void AddManager(AvailablePart aPart)
@@ -298,11 +382,11 @@ namespace Kerbal_Mechanics
         void ConfigureBaseValues(ConfigNode node, ModuleReliabilityBase module)
         {
             if (node.HasValue("quality")) { module.quality = float.Parse(node.GetValue("quality")); }
-            if (node.HasValue("reliability")) { module.reliability = float.Parse(node.GetValue("reliability")); }
+            if (node.HasValue("reliability")) { module.reliability = double.Parse(node.GetValue("reliability")); }
             if (node.HasValue("failure")) { module.failure = node.GetValue("failure"); }
             if (node.HasValue("rocketPartsNeededToFix")) { module.rocketPartsNeededToFix = int.Parse(node.GetValue("rocketPartsNeededToFix")); }
-            if (node.HasValue("reliabilityDrainPerfect")) { module.reliabilityDrainPerfect = float.Parse(node.GetValue("reliabilityDrainPerfect")); }
-            if (node.HasValue("reliabilityDrainTerrible")) { module.reliabilityDrainTerrible = float.Parse(node.GetValue("reliabilityDrainTerrible")); }
+            if (node.HasValue("reliabilityDrainPerfect")) { module.reliabilityDrainPerfect = int.Parse(node.GetValue("reliabilityDrainPerfect")); }
+            if (node.HasValue("reliabilityDrainTerrible")) { module.reliabilityDrainTerrible = int.Parse(node.GetValue("reliabilityDrainTerrible")); }
         }
     }
 }

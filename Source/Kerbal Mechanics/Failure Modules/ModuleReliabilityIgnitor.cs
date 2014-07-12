@@ -10,26 +10,18 @@ namespace Kerbal_Mechanics
     /// </summary>
     class ModuleReliabilityIgnitor : ModuleReliabilityBase
     {
-        //CONSTANTS AND STATICS
-        #region CONSTANTS AND STATICS
-        /// <summary>
-        /// Time until the next running failure check.
-        /// </summary>
-        static readonly float timeTillFailCheck = 10f;
-        #endregion
-
         //FAILURE CHANCES
         #region FAILURE CHANCES
         /// <summary>
         /// Chance to fail while starting under perfect conditions
         /// </summary>
         [KSPField]
-        public float startingChanceToFailPerfect = 0.015625f;
+        public double startingChanceToFailPerfect = 0.015625f;
         /// <summary>
         /// Chance to fail while starting under the worst of conditions
         /// </summary>
         [KSPField]
-        public float startingChanceToFailTerrible = 0.875f;
+        public double startingChanceToFailTerrible = 0.875f;
 
         /// <summary>
         /// Chance kicking the ignitor will cause it to explode.
@@ -48,7 +40,7 @@ namespace Kerbal_Mechanics
         /// <summary>
         /// Gets the crrent starting chance to fail, based on the current reliability.
         /// </summary>
-        public float CurrentStartingChanceToFail
+        public double CurrentStartingChanceToFail
         {
             get { return startingChanceToFailPerfect + ((startingChanceToFailTerrible - startingChanceToFailPerfect) * (1f - reliability)); }
         }
@@ -63,11 +55,6 @@ namespace Kerbal_Mechanics
 
         //OTHER VARS
         #region OTHER VARS
-        /// <summary>
-        /// Time since the last running failure check.
-        /// </summary>
-        float timeSinceFailCheck = 0f;
-
         /// <summary>
         /// The thrust at last frame.
         /// </summary>
@@ -98,31 +85,34 @@ namespace Kerbal_Mechanics
         {
             base.OnStart(state);
 
-            engine = part.Modules.OfType<ModuleEngines>().FirstOrDefault<ModuleEngines>();
-            if (!engine)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                engineFX = part.Modules.OfType<ModuleEnginesFX>().FirstOrDefault<ModuleEnginesFX>();
-
-                if (!engineFX)
+                engine = part.Modules.OfType<ModuleEngines>().FirstOrDefault<ModuleEngines>();
+                if (!engine)
                 {
-                    Logger.DebugError("Both engine and engineFX are NULL!");
+                    engineFX = part.Modules.OfType<ModuleEnginesFX>().FirstOrDefault<ModuleEnginesFX>();
+
+                    if (!engineFX)
+                    {
+                        Logger.DebugError("Both engine and engineFX are NULL!");
+                    }
                 }
-            }
 
-            if (engine)
-            {
-                engine.Fields["status"].guiName = "Pump Status";
-            }
-            else if (engineFX)
-            {
-                engineFX.Fields["status"].guiName = "Pump Status";
-            }
+                if (engine)
+                {
+                    engine.Fields["status"].guiName = "Pump Status";
+                }
+                else if (engineFX)
+                {
+                    engineFX.Fields["status"].guiName = "Pump Status";
+                }
 
-            Fields["quality"].guiName = "Ignitor " + Fields["quality"].guiName;
+                Fields["quality"].guiName = "Ignitor " + Fields["quality"].guiName;
 
-            if (failure != "")
-            {
-                BreakIgnitor(false);
+                if (failure != "")
+                {
+                    BreakIgnitor(false);
+                }
             }
         }
 
@@ -131,61 +121,64 @@ namespace Kerbal_Mechanics
         /// </summary>
         public override void OnUpdate()
         {
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                lastFrameThrust = currFrameThrust;
+                currFrameThrust = FlightInputHandler.state.mainThrottle;
+
+                if (engine)
+                {
+                    engine.staged = engine.EngineIgnited || engine.staged;
+
+                    if (engine.EngineIgnited && failure == "")
+                    {
+                        if (lastFrameThrust == 0f && currFrameThrust > 0f)
+                        {
+                            if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
+                            {
+                                BreakIgnitor(true);
+                            }
+                        }
+
+                        if (timeSinceFailCheck < timeTillFailCheck)
+                        {
+                            timeSinceFailCheck += TimeWarp.deltaTime;
+                        }
+                        else
+                        {
+                            timeSinceFailCheck = 0f;
+                            reliability -= CurrentReliabilityDrain + ((CurrentReliabilityDrain * 9) * engine.currentThrottle);
+                        }
+                    }
+                }
+                else if (engineFX)
+                {
+                    engineFX.staged = engineFX.EngineIgnited || engineFX.staged;
+
+                    if (engineFX.EngineIgnited && failure == "")
+                    {
+                        if (currFrameThrust > 0f && lastFrameThrust == 0f)
+                        {
+                            if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
+                            {
+                                BreakIgnitor(true);
+                            }
+                        }
+
+                        if (timeSinceFailCheck < timeTillFailCheck)
+                        {
+                            timeSinceFailCheck += TimeWarp.deltaTime;
+                        }
+                        else
+                        {
+                            timeSinceFailCheck = 0f;
+                            reliability -= CurrentReliabilityDrain + ((CurrentReliabilityDrain * 9) * engineFX.currentThrottle);
+                        }
+                    }
+                }
+            }
+
             base.OnUpdate();
-
-            lastFrameThrust = currFrameThrust;
-            currFrameThrust = FlightInputHandler.state.mainThrottle;
-
-            if (engine)
-            {
-                engine.staged = engine.EngineIgnited || engine.staged;
-
-                if (engine.EngineIgnited && failure == "" && currFrameThrust > 0f)
-                {
-                    if (lastFrameThrust == 0f)
-                    {
-                        if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
-                        {
-                            BreakIgnitor(true);
-                        }
-                    }
-
-                    if (timeSinceFailCheck < timeTillFailCheck)
-                    {
-                        timeSinceFailCheck += TimeWarp.deltaTime;
-                    }
-                    else
-                    {
-                        timeSinceFailCheck = 0f;
-                        reliability -= CurrentReliabilityDrain * engine.currentThrottle;
-                    }
-                }
-            }
-            else if (engineFX)
-            {
-                engineFX.staged = engineFX.EngineIgnited || engineFX.staged;
-
-                if (engineFX.EngineIgnited && failure == "")
-                {
-                    if (currFrameThrust > 0f && lastFrameThrust == 0f)
-                    {
-                        if (Random.Range(0f, 1f) < CurrentStartingChanceToFail)
-                        {
-                            BreakIgnitor(true);
-                        }
-                    }
-
-                    if (timeSinceFailCheck < timeTillFailCheck)
-                    {
-                        timeSinceFailCheck += TimeWarp.deltaTime;
-                    }
-                    else
-                    {
-                        timeSinceFailCheck = 0f;
-                        reliability -= CurrentReliabilityDrain * engineFX.currentThrottle;
-                    }
-                }
-            }
         }
         #endregion
 
@@ -232,6 +225,22 @@ namespace Kerbal_Mechanics
                 FixIgnitor(true);
             }
         }
+
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]
+        public override void PerformMaintenance()
+        {
+            if (FlightGlobals.ActiveVessel.isEVA)
+            {
+                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
+
+                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 2));
+
+                fixSound.audio.Play();
+
+                reliability += 0.1;
+                reliability = reliability.Clamp(0, 1);
+            }
+        }
         #endregion
 
         // OTHER METHODS
@@ -241,35 +250,40 @@ namespace Kerbal_Mechanics
         /// </summary>
         void BreakIgnitor(bool display)
         {
-            failure = "Ignition Coil Burnt";
-
-            if (engine)
+            if (!broken)
             {
-                engine.Shutdown();
-                engine.Events["Activate"].guiActive = false;
-                engine.Events["Shutdown"].guiActive = false;
-                engine.Actions["OnAction"].active = false;
-                engine.Actions["ShutdownAction"].active = false;
-                engine.Actions["ActivateAction"].active = false;
-            }
-            else if (engineFX)
-            {
-                engineFX.Shutdown();
-                engineFX.Events["Activate"].guiActive = false;
-                engineFX.Events["Shutdown"].guiActive = false;
-                engineFX.Actions["OnAction"].active = false;
-                engineFX.Actions["ShutdownAction"].active = false;
-                engineFX.Actions["ActivateAction"].active = false;
-            }
+                failure = "Ignition Coil Burnt";
 
-            Events["FixIgnitor"].guiActiveUnfocused = true;
-            Events["KickIgnitor"].guiActiveUnfocused = true;
+                if (engine)
+                {
+                    engine.Shutdown();
+                    engine.Events["Activate"].guiActive = false;
+                    engine.Events["Shutdown"].guiActive = false;
+                    engine.Actions["OnAction"].active = false;
+                    engine.Actions["ShutdownAction"].active = false;
+                    engine.Actions["ActivateAction"].active = false;
+                }
+                else if (engineFX)
+                {
+                    engineFX.Shutdown();
+                    engineFX.Events["Activate"].guiActive = false;
+                    engineFX.Events["Shutdown"].guiActive = false;
+                    engineFX.Actions["OnAction"].active = false;
+                    engineFX.Actions["ShutdownAction"].active = false;
+                    engineFX.Actions["ActivateAction"].active = false;
+                }
 
-            rocketPartsLeftToFix = rocketPartsNeededToFix;
+                Events["FixIgnitor"].guiActiveUnfocused = true;
+                Events["KickIgnitor"].guiActiveUnfocused = true;
 
-            if (display)
-            {
-                KMUtil.PostFailure(part, "'s ignition coil has burnt up!");
+                rocketPartsLeftToFix = rocketPartsNeededToFix;
+
+                if (display)
+                {
+                    KMUtil.PostFailure(part, "'s ignition coil has burnt up!");
+                }
+
+                broken = true;
             }
         }
 
@@ -303,7 +317,9 @@ namespace Kerbal_Mechanics
 
             reliability += 0.2f - (kicked ? 0f : 0.15f);
 
-            reliability = Mathf.Min(reliability, 1f);
+            reliability = reliability.Clamp(0, 1);
+
+            broken = false;
         }
 
         /// <summary>
@@ -323,7 +339,7 @@ namespace Kerbal_Mechanics
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label(reliability.ToString("##0.#%"), HighLogic.Skin.label);
+            GUILayout.Label(reliability.ToString("##0.00%"), HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(startingChanceToFailPerfect.ToString("##0.#####%"), HighLogic.Skin.label);

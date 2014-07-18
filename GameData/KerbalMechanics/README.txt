@@ -53,6 +53,7 @@ CHANGELOG:
 v0.3.1:
 - Updated mod to KSP version 0.24.
 - Fixed instant and automatic altimeter failures on all but one pod.
+- IMPORTANT NOTE: Due to a fault in how part costs work, this mod currently DOES NOT support funds. An urgent email to Squad support has already been sent.
 
 v0.3:
 - Modified reliability drain algorithm to use a curve, such that increases in quality past a certain point gives less and less decrease in reliability drain. The same about quality decrease is also true.

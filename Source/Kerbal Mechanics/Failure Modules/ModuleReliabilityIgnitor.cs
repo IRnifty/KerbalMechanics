@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Kerbal_Mechanics
+namespace KerbalMechanics
 {
     /// <summary>
     /// The ignitor reliability module. Adds ignitor failure and repair functionality to parts equipped with either ModuleEngines or ModuleEnginesFX.

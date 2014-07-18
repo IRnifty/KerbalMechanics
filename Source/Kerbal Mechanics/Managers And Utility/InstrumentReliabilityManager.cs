@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Kerbal_Mechanics
+namespace KerbalMechanics
 {
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     class InstrumentReliabilityManager : MonoBehaviour
@@ -12,7 +12,6 @@ namespace Kerbal_Mechanics
         //Altimeter
         Tumblers realAltimeter;
         Tumblers dummyAltimeter;
-        List<AltimeterList> vessels;
         List<ModuleReliabilityAltimeter> altimeterModules;
         double falseAltReading = -1;
 
@@ -22,6 +21,9 @@ namespace Kerbal_Mechanics
         {
             get { return instance; }
         }
+
+        //Misc.
+        int lastNumOfParts;
 
         void Awake ()
         {
@@ -33,30 +35,30 @@ namespace Kerbal_Mechanics
             dummyAltimeter.transform.position -= Vector3.right * 1000f;
             dummyAltimeter.enabled = false;
             FlightUIController.fetch.alt = dummyAltimeter;
-            vessels = new List<AltimeterList>();
             altimeterModules = new List<ModuleReliabilityAltimeter>();
         }
 
         void Start ()
         {
-            
+            RecompileList(FlightGlobals.ActiveVessel);
+            GameEvents.onVesselChange.Add(new EventData<Vessel>.OnEvent(RecompileList));
+            lastNumOfParts = FlightGlobals.ActiveVessel.Parts.Count;
         }
 
         void LateUpdate ()
         {
-            bool allAltsBroke = true;
-            foreach(AltimeterList vessel in vessels)
+            if (lastNumOfParts != FlightGlobals.ActiveVessel.Parts.Count)
             {
-                if (vessel.vessel == FlightGlobals.ActiveVessel && !FlightGlobals.ActiveVessel.isEVA)
+                RecompileList(FlightGlobals.ActiveVessel);
+            }
+
+            bool allAltsBroke = altimeterModules.Count > 0;
+            foreach(ModuleReliabilityAltimeter alt in altimeterModules)
+            {
+                if (alt.failure == "")
                 {
-                    foreach(ModuleReliabilityAltimeter alt in vessel.altimeterList)
-                    {
-                        if (alt.failure == "")
-                        {
-                            allAltsBroke = false;
-                            break;
-                        }
-                    }
+                    allAltsBroke = false;
+                    break;
                 }
             }
 
@@ -70,22 +72,31 @@ namespace Kerbal_Mechanics
             }
             else
             {
+                if (falseAltReading != -1)
+                {
+                    falseAltReading = -1;
+                }
                 realAltimeter.setValue(dummyAltimeter.value);
             }
         }
 
-        public static void AddAltimetermodule(ModuleReliabilityAltimeter altimeter)
+        void RecompileList(Vessel vessel)
         {
-            foreach(AltimeterList l in instance.vessels)
+            if (vessel == FlightGlobals.ActiveVessel)
             {
-                if (l.vessel == altimeter.vessel)
+                lastNumOfParts = FlightGlobals.ActiveVessel.Parts.Count;
+
+                altimeterModules = new List<ModuleReliabilityAltimeter>();
+                foreach (Part part in FlightGlobals.ActiveVessel.Parts)
                 {
-                    l.altimeterList.Add(altimeter);
-                    return;
+                    ModuleReliabilityAltimeter alt = part.Modules.OfType<ModuleReliabilityAltimeter>().FirstOrDefault<ModuleReliabilityAltimeter>();
+
+                    if (alt)
+                    {
+                        altimeterModules.Add(alt);
+                    }
                 }
             }
-
-            instance.vessels.Add(new AltimeterList(altimeter.vessel, altimeter));
         }
     }
 }

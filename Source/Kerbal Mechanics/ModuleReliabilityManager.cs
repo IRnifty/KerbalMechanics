@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Kerbal_Mechanics
+namespace KerbalMechanics
 {
     class ModuleReliabilityManager : PartModule
     {
@@ -19,6 +19,10 @@ namespace Kerbal_Mechanics
         /// An array of boolean values corresponding to the array of reliability modules. If a value is true, the GUI window will display additional information for that module.
         /// </summary>
         bool[] displayingModule;
+        /// <summary>
+        /// The string used as an intermediary between the text field and the quality variable.
+        /// </summary>
+        string[] qualityString;
 
         /// <summary>
         /// If true, shows a GUI displaying stats and, if in the editor, some editable fields such as quality.
@@ -32,10 +36,19 @@ namespace Kerbal_Mechanics
         /// The GUI scroll position.
         /// </summary>
         Vector2 scrollPos = Vector2.zero;
+
         /// <summary>
-        /// The string used as an intermediary between the text field and the quality variable.
+        /// The cost of this part if all reliability modules had 0% quality.
         /// </summary>
-        string[] qualityString;
+        float allTerribleCost;
+        /// <summary>
+        /// The cost of this part if all reliability modules had 75% quality.
+        /// </summary>
+        float allDefaultCost;
+        /// <summary>
+        /// The change in cost per 1% quality
+        /// </summary>
+        float changePerPercent;
         #endregion
 
         //KSP METHODS
@@ -62,6 +75,14 @@ namespace Kerbal_Mechanics
 
             showingGUI = false;
             Events["ShowGUI"].active = true;
+
+            // INEFFECTIVE: The below code was supposed to modify an individual part's cost, but currently also modifies the default cost.
+
+            //allDefaultCost = PartLoader.getPartInfoByName(part.name).cost;
+            //allTerribleCost = allDefaultCost * 0.5f;
+            //changePerPercent = (allDefaultCost - allTerribleCost) / 75 / rModuleList.Length;
+
+            //StartCoroutine(PostStart());
         }
 
         /// <summary>
@@ -71,26 +92,41 @@ namespace Kerbal_Mechanics
         {
             base.OnUpdate();
 
-            bool shouldBeRed = false;
+            if (HighLogic.LoadedSceneIsEditor)
+            {
+                // INEFFECTIVE: The below code was supposed to modify an individual part's cost, but currently also modifies the default cost.
 
-            foreach (ModuleReliabilityBase mRel in rModuleList)
-            {
-                if (mRel.failure != "")
-                {
-                    shouldBeRed = true;
-                }
-            }
+                //float currentCost = CalculateCost();
 
-            if (shouldBeRed)
-            {
-                if (part.highlightColor != Color.red)
-                {
-                    KMUtil.SetPartHighlight(part, Color.red, Part.HighlightType.AlwaysOn);
-                }
+                //if (part.partInfo.cost != currentCost)
+                //{
+                //    part.partInfo.cost = currentCost;
+                //    GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+                //}
             }
-            else if (part.highlightColor != KMUtil.KerbalGreen)
+            else if (HighLogic.LoadedSceneIsFlight)
             {
-                KMUtil.SetPartHighlight(part, KMUtil.KerbalGreen, Part.HighlightType.OnMouseOver);
+                bool shouldBeRed = false;
+
+                foreach (ModuleReliabilityBase mRel in rModuleList)
+                {
+                    if (mRel.failure != "")
+                    {
+                        shouldBeRed = true;
+                    }
+                }
+
+                if (shouldBeRed)
+                {
+                    if (part.highlightColor != Color.red)
+                    {
+                        KMUtil.SetPartHighlight(part, Color.red, Part.HighlightType.AlwaysOn);
+                    }
+                }
+                else if (part.highlightColor != KMUtil.KerbalGreen)
+                {
+                    KMUtil.SetPartHighlight(part, KMUtil.KerbalGreen, Part.HighlightType.OnMouseOver);
+                }
             }
         }
         #endregion
@@ -107,6 +143,9 @@ namespace Kerbal_Mechanics
 
         //UNITY METHODS
         #region UNITY METHODS
+        /// <summary>
+        /// Called when the GUI is drawn.
+        /// </summary>
         void OnGUI()
         {
             if (showingGUI && (HighLogic.LoadedSceneIsEditor || HighLogic.LoadedSceneIsFlight))
@@ -127,6 +166,35 @@ namespace Kerbal_Mechanics
 
             displayingModule = new bool[rModuleList.Length];
         }
+
+        // INEFFECTIVE: The below code was supposed to modify an individual part's cost, but currently also modifies the default cost.
+
+        ///// <summary>
+        ///// Post starts the module, calculating the cost of the part.
+        ///// </summary>
+        ///// <returns>The enumerator.</returns>
+        //public IEnumerator PostStart()
+        //{
+        //    yield return new WaitForEndOfFrame();
+
+        //    part.partInfo.cost = CalculateCost();
+
+        //    GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+        //}
+
+        ///// <summary>
+        ///// Calculates the cost of the part.
+        ///// </summary>
+        ///// <returns></returns>
+        //public float CalculateCost ()
+        //{
+        //    float currentCost = allTerribleCost;
+        //    foreach (ModuleReliabilityBase rMod in rModuleList)
+        //    {
+        //        currentCost += changePerPercent * (rMod.quality * 100f);
+        //    }
+        //    return currentCost;
+        //}
 
         /// <summary>
         /// Gets the description of the monitored Reliability Modules.

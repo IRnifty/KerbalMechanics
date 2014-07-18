@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Kerbal_Mechanics
+namespace KerbalMechanics
 {
     [KSPAddon(KSPAddon.Startup.EditorAny, false)]
     class EditorLoader : MonoBehaviour

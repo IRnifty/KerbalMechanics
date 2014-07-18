@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace Kerbal_Mechanics
+namespace KerbalMechanics
 {
     class Logger
     {

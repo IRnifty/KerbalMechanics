@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.3: Alpha
+V0.3.1: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -49,6 +49,10 @@ The altimeter can fail:
 Failures can be fixed by going on EVA, getting some spare Rocket Parts, right-clicking the part, and attempting the fix. Most failure types have two repair options, one which costs Rocket Parts and is more reliable, and another, more silly option that is free, but may make the problem worse.
 
 CHANGELOG:
+
+v0.3.1:
+- Updated mod to KSP version 0.24.
+- Fixed instant and automatic altimeter failures on all but one pod.
 
 v0.3:
 - Modified reliability drain algorithm to use a curve, such that increases in quality past a certain point gives less and less decrease in reliability drain. The same about quality decrease is also true.

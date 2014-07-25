@@ -208,11 +208,11 @@ namespace KerbalMechanics
             {
                 Part kerbal = FlightGlobals.ActiveVessel.parts[0];
 
-                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 2));
+                double partsGotten = kerbal.RequestResource("RocketParts", 2);
 
                 fixSound.audio.Play();
 
-                reliability += 0.1;
+                reliability += 0.05 * partsGotten;
                 reliability = reliability.Clamp(0, 1);
             }
         }
@@ -275,7 +275,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Gets the reliability information on this module.
         /// </summary>
-        public override void DisplayDesc()
+        public override void DisplayDesc(double inaccuracySeverity)
         {
             GUILayout.BeginHorizontal();
 
@@ -289,7 +289,7 @@ namespace KerbalMechanics
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label(reliability.ToString("##0.#%"), HighLogic.Skin.label);
+            GUILayout.Label((reliability + inaccuracySeverity).ToString("##0.#%"), HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(chanceToFailPerfect.ToString("##0.#####%"), HighLogic.Skin.label);

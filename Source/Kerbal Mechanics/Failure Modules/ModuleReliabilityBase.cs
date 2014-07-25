@@ -35,7 +35,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Is the part broken?
         /// </summary>
-        [KSPField(isPersistant = true)]
+        [KSPField(guiName = "Failure", isPersistant = true)]
         public string failure = "";
 
         /// <summary>
@@ -115,15 +115,6 @@ namespace KerbalMechanics
         protected float timeSinceFailCheck = 0f;
 
         /// <summary>
-        /// The g force experienced last frame.
-        /// </summary>
-        private double lastGeeForce = 0.0;
-        /// <summary>
-        /// The change in g force experienced this frame.
-        /// </summary>
-        protected double deltaGeeForce = 0.0;
-
-        /// <summary>
         /// The fix sound.
         /// </summary>
         protected FXGroup fixSound;
@@ -194,6 +185,13 @@ namespace KerbalMechanics
             SoundManager.CreateFXSound(part, bashSound, "Hammer1", false);
         }
 
+        public override void OnLoad(ConfigNode node)
+        {
+            base.OnLoad(node);
+
+            if (node.HasValue("reliability")) { reliability = double.Parse(node.GetValue("reliability")); }
+        }
+
         /// <summary>
         /// Updates the module.
         /// </summary>
@@ -203,9 +201,6 @@ namespace KerbalMechanics
 
             if (HighLogic.LoadedSceneIsFlight)
             {
-                deltaGeeForce = System.Math.Abs(lastGeeForce - vessel.geeForce);
-                lastGeeForce = vessel.geeForce;
-
                 Fields["failure"].guiActive = (failure != "");
 
                 if (failure != "")
@@ -222,7 +217,7 @@ namespace KerbalMechanics
                 {
                     Events["UnfocusedFailure"].active = false;
                     Events["UnfocusedPartsNeeded"].active = false;
-                    Events["PerformMaintenance"].active = true;
+                    Events["PerformMaintenance"].active = reliability < 1f;
                 }
 
                 reliability = reliability.Clamp(0, 1);
@@ -240,7 +235,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Abstract. Requires child classes to implement a method which provides reliability information about the module.
         /// </summary>
-        public abstract void DisplayDesc();
+        public abstract void DisplayDesc(double inaccuracySeverity);
         #endregion
     }
 }

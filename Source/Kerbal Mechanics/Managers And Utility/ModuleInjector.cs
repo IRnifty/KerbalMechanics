@@ -23,16 +23,25 @@ namespace KerbalMechanics
                 injection.moduleInjections.Add("ModuleReliabilityDecoupler", new ModuleInjection(AddDecoupler));
                 injection.moduleInjections.Add("ModuleReliabilityLight", new ModuleInjection(AddLight));
                 injection.moduleInjections.Add("ModuleReliabilityTank", new ModuleInjection(AddTank));
-                injection.resourceInjections.Add("RocketParts", new ModuleInjection(AddRocketParts));
-
                 injection.moduleInjections.Add("ModuleReliabilityAltimeter", new ModuleInjection(AddAltimeter));
+                injection.moduleInjections.Add("ModuleReliabilityThrust", new ModuleInjection(AddThrustGauge));
+                injection.moduleInjections.Add("ModuleReliabilityMonitor", new ModuleInjection(AddMonitor));
+                injection.resourceInjections.Add("RocketParts", new ModuleInjection(AddRocketParts));
 
                 ConfigNode node = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/KerbalMechanics/Injections.cfg") ?? new ConfigNode();
                 InjectModules(node);
             }
-            catch
+            catch (Exception e)
             {
-                Logger.DebugLog("Injection halted. Modules and resources already injected.");
+                if (e.Message.Contains("dictionary"))
+                {
+                    Logger.DebugLog("Injection halted. Modules and resources already injected.");
+                }
+                else
+                {
+                    Logger.DebugError(e.Message);
+                    Logger.DebugError(e.StackTrace);
+                }
             }
         }
 
@@ -347,10 +356,50 @@ namespace KerbalMechanics
                 }
             }
 
-            if (node.HasValue("chanceToFailPerfect")) { rModule.chanceToFailPerfect = double.Parse(node.GetValue("chanceToFailPerfect")); }
-            if (node.HasValue("chanceToFailTerrible")) { rModule.chanceToFailTerrible = double.Parse(node.GetValue("chanceToFailTerrible")); }
-            if (node.HasValue("maxGeesPerfect")) { rModule.maxGeesPerfect = double.Parse(node.GetValue("maxGeesPerfect")); }
-            if (node.HasValue("maxGeesTerrible")) { rModule.maxGeesTerrible = double.Parse(node.GetValue("maxGeesTerrible")); }
+            ConfigureBaseValues(node, rModule);
+            ConfigureInstrumentValues(node, rModule);
+        }
+
+        void AddThrustGauge (ConfigNode node, AvailablePart aPart)
+        {
+            ModuleReliabilityThrust rModule = aPart.partPrefab.GetComponent<ModuleReliabilityThrust>();
+            if (rModule)
+            {
+                Logger.DebugWarning("ModuleReliabilityThrust already added to \"" + aPart.name + "\"!");
+            }
+            else
+            {
+                rModule = aPart.partPrefab.AddModule("ModuleReliabilityThrust") as ModuleReliabilityThrust;
+                if (!rModule)
+                {
+                    Logger.DebugError("Problem adding module to command pod!");
+                    return;
+                }
+            }
+
+            ConfigureBaseValues(node, rModule);
+            ConfigureInstrumentValues(node, rModule);
+        }
+
+        void AddMonitor (ConfigNode node, AvailablePart aPart)
+        {
+            ModuleReliabilityMonitor rModule = aPart.partPrefab.GetComponent<ModuleReliabilityMonitor>();
+            if (rModule)
+            {
+                Logger.DebugWarning("ModuleReliabilityMonitor already added to \"" + aPart.name + "\"!");
+            }
+            else
+            {
+                rModule = aPart.partPrefab.AddModule("ModuleReliabilityMonitor") as ModuleReliabilityMonitor;
+                if (!rModule)
+                {
+                    Logger.DebugError("Problem adding module to command pod!");
+                    return;
+                }
+            }
+
+            ConfigureBaseValues(node, rModule);
+            ConfigureInstrumentValues(node, rModule);
         }
 
         void AddManager(AvailablePart aPart)
@@ -387,6 +436,14 @@ namespace KerbalMechanics
             if (node.HasValue("rocketPartsNeededToFix")) { module.rocketPartsNeededToFix = int.Parse(node.GetValue("rocketPartsNeededToFix")); }
             if (node.HasValue("reliabilityDrainPerfect")) { module.reliabilityDrainPerfect = int.Parse(node.GetValue("reliabilityDrainPerfect")); }
             if (node.HasValue("reliabilityDrainTerrible")) { module.reliabilityDrainTerrible = int.Parse(node.GetValue("reliabilityDrainTerrible")); }
+        }
+
+        void ConfigureInstrumentValues(ConfigNode node, ModuleReliabilityInstrument module)
+        {
+            if (node.HasValue("chanceToFailPerfect")) { module.chanceToFailPerfect = double.Parse(node.GetValue("chanceToFailPerfect")); }
+            if (node.HasValue("chanceToFailTerrible")) { module.chanceToFailTerrible = double.Parse(node.GetValue("chanceToFailTerrible")); }
+            if (node.HasValue("maxGeesPerfect")) { module.maxGeesPerfect = double.Parse(node.GetValue("maxGeesPerfect")); }
+            if (node.HasValue("maxGeesTerrible")) { module.maxGeesTerrible = double.Parse(node.GetValue("maxGeesTerrible")); }
         }
     }
 }

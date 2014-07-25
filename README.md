@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.3.1: Alpha
+V0.4: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -12,12 +12,14 @@ Created by: Nifty255
 Copyright 2014 All rights reserved.
 
 
-This mod is in ALPHA. There will likely be bugs. The parts are not balanced. If you have a bug, or a suggestion, please leave your feedback in a mature manner. Also, all parts currently included in the mod are NOT the IP of Nifty255 and will change before final release.
+This mod is in ALPHA. There will likely be bugs. The parts are not balanced. If you have a bug, or a suggestion, please leave your feedback in a mature manner.
+Also, all parts currently included in the mod are NOT the IP of Nifty255 and will change before final release.
 
 
 FEATURES:
 
 Parts that can fail are tested based on their "reliability", which drains faster or slower, depending on the "quality".
+The quality of a part also affects the cost of that part. Lower quality makes it cheaper, but also makes failure more likely.
 Some parts also rely on not being shaken up too badly (excessively high g forces) to remain operational.
 Each kind of failure is individually tested against the appropriate module.
 As an example, an engine will have up to 4 different pieces that can fail:
@@ -26,7 +28,9 @@ As an example, an engine will have up to 4 different pieces that can fail:
 - The gimbal motor
 - The alternator
 
-Most failures have two options for fixing. A standard fix, which will cost Rocket Parts, and a second, more silly option, which is free, but provides a risk of further damage. The free option may need to be clicked more than once.
+Most failures have two options for fixing:
+A standard fix, which will cost Rocket Parts, and a second, more silly option, which is free, but provides a risk of further damage.
+The free option may need to be clicked more than once.
 
 Engines can fail:
   - Ignition failures while throttling up from 0, preventing the engine from firing.
@@ -46,14 +50,31 @@ Tanks can leak:
 The altimeter can fail:
   - Excessively high g forces can damage the altimeter, causing it to display incorrect height data.
 
-Failures can be fixed by going on EVA, getting some spare Rocket Parts, right-clicking the part, and attempting the fix. Most failure types have two repair options, one which costs Rocket Parts and is more reliable, and another, more silly option that is free, but may make the problem worse.
+The thrust gauge can fail:
+ - Excessively high g forces can damage the thrust gauge, causing it to display an incorrect thrust value.
+
+A Reliability Monitor has been added:
+ - The monitor also has quality and reliability, but cannot "break". Instead, reliability information becomes more inaccurate as reliability drains.
+ - Through the Monitor GUI, parts with failed modules can be set to highlight red.
+ - Through the Monitor GUI, a color map of the ship's status can be placed on the ship. Green for high reliability, yellow for aging, and red for very low.
+
+Failures can be fixed by going on EVA, getting some spare Rocket Parts, right-clicking the part, and attempting the fix.
+Most failure types have two repair options, one which costs Rocket Parts and is more reliable, and another, more silly option that is free, but may make the problem worse.
 
 CHANGELOG:
+
+v0.4:
+- Updated mod to KSP version 0.24.1.
+- Added Funds support. Terrible quality parts (all modules 0%) cost 50% of the part's default cost. Default quality parts (all modules 75%) cost 100% of the default.
+- Added thrust gauge failures. Excessively high g forces will cause the thrust gauge to display incorrect data. If multiple parts with gauge capabilities are present, all must fail to cause true failure.
+- Added Reliability Monitor to all command parts. Has both quality and reliability, but no true failure. Low reliability results in inaccurate reliability data across the ship.
+- Added a control panel to the Reliability Monitor that allows highlighting of parts with failed modules. Also allows the player to map the status of the ship's parts on the ship. (Green is good, red is bad.)
+- Added option for quality changes in the editor to also affect parts in symetry with original part.
 
 v0.3.1:
 - Updated mod to KSP version 0.24.
 - Fixed instant and automatic altimeter failures on all but one pod.
-- IMPORTANT NOTE: Due to a fault in how part costs work, this mod currently DOES NOT support funds. An urgent email to Squad support has already been sent.
+- IMPORTANT NOTE: Due to a fault in how part costs work, this version DOES NOT support funds. An urgent email to Squad support has already been sent.
 
 v0.3:
 - Modified reliability drain algorithm to use a curve, such that increases in quality past a certain point gives less and less decrease in reliability drain. The same about quality decrease is also true.

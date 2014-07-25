@@ -197,10 +197,20 @@ namespace KerbalMechanics
             DetermineFailure(-1);
         }
 
-        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = false, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Maintain Charge")]
         public override void PerformMaintenance()
         {
-            
+            if (FlightGlobals.ActiveVessel.isEVA)
+            {
+                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
+
+                double partsGotten = kerbal.RequestResource("RocketParts", 2);
+
+                fixSound.audio.Play();
+
+                reliability += 0.5 * partsGotten;
+                reliability = reliability.Clamp(0, 1);
+            }
         }
         #endregion
 
@@ -257,7 +267,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Gets the reliability information on this module.
         /// </summary>
-        public override void DisplayDesc()
+        public override void DisplayDesc(double inaccuracySeverity)
         {
             GUILayout.BeginHorizontal();
 

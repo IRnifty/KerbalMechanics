@@ -253,7 +253,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Gets the reliability information on this module.
         /// </summary>
-        public override void DisplayDesc()
+        public override void DisplayDesc(double inaccuracySeverity)
         {
             GUILayout.BeginHorizontal();
 
@@ -267,7 +267,7 @@ namespace KerbalMechanics
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label(reliability.ToString("##0.#%"), HighLogic.Skin.label);
+            GUILayout.Label((reliability + inaccuracySeverity).ToString("##0.#%"), HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(" ", HighLogic.Skin.label);
             GUILayout.Label(chanceToFailPerfect.ToString("##0.#####%"), HighLogic.Skin.label);

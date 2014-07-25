@@ -40,7 +40,7 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\KSP Test Folder\0.24\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\KSP Test Folder\0.24.1\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Failure Modules\ModuleReliabilityInstrument.cs" />
+    <Compile Include="Managers And Utility\LoadingLoader.cs" />
     <Compile Include="Misc\AltimeterModuleList.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityTank.cs" />
     <Compile Include="Managers And Utility\EditorLoader.cs" />
@@ -68,13 +69,14 @@
     <Compile Include="Failure Modules\ModuleReliabilityGimbal.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityAltimeter.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityAlternator.cs" />
-    <Compile Include="ModuleReliabilityManager.cs" />
-    <Compile Include="ModuleReliabilityBase.cs" />
+    <Compile Include="Managers And Utility\ModuleReliabilityManager.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityBase.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityDecoupler.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityIgnitor.cs" />
     <Compile Include="Failure Modules\ModuleReliabilityLight.cs" />
-    <Compile Include="ModuleReliabilityMonitor.cs" />
-    <Compile Include="ModuleRocketPartsContainer.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityMonitor.cs" />
+    <Compile Include="Failure Modules\ModuleReliabilityThrust.cs" />
+    <Compile Include="Misc\ModuleRocketPartsContainer.cs" />
     <Compile Include="Managers And Utility\SoundManager.cs" />
     <Compile Include="Prop Modules\InternalAltimeterThreeHandsReliability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,11 +93,11 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.24\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.24.1\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
 
-xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.24\GameData\KerbalMechanics" /S /E /Y
+xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.24.1\GameData\KerbalMechanics" /S /E /Y
 
-xcopy "D:\KSP Test Folder\0.24\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
+xcopy "D:\KSP Test Folder\0.24.1\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
 
 copy /Y "D:\Documents\GitHub\KerbalMechanics\Source\Kerbal Mechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt"
 

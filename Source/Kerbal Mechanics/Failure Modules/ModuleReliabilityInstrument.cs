@@ -53,14 +53,6 @@ namespace KerbalMechanics
         }
 
         /// <summary>
-        /// Gets the number of gees this vessel is over by, multiplied times ten.
-        /// </summary>
-        protected double CurrentOverGees
-        {
-            get { return System.Math.Max(vessel.geeForce - 5, 0) * 10; }
-        }
-
-        /// <summary>
         /// The module name.
         /// </summary>
         public abstract override string ModuleName
@@ -69,8 +61,14 @@ namespace KerbalMechanics
         }
         #endregion
 
+        //KSP EVENTS
+        #region KSP EVENTS
         public abstract override void PerformMaintenance();
+        #endregion
 
-        public abstract override void DisplayDesc();
+        //OTHER METHODS
+        #region OTHER METHODS
+        public abstract override void DisplayDesc(double inaccuracySeverity);
+        #endregion
     }
 }

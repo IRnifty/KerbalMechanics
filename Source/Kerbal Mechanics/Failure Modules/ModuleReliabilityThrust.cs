@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace KerbalMechanics
 {
-    class ModuleReliabilityAltimeter : ModuleReliabilityInstrument
+    class ModuleReliabilityThrust : ModuleReliabilityInstrument
     {
         //PROPERTIES
         #region PROPERTIES
@@ -15,7 +15,7 @@ namespace KerbalMechanics
         /// </summary>
         public override string ModuleName
         {
-            get { return "Altimeter"; }
+            get { return "Thrust Gauge"; }
         }
         #endregion
 
@@ -33,7 +33,7 @@ namespace KerbalMechanics
             {
                 if (failure != "")
                 {
-                    BreakAltimeter();
+                    BreakThrustGauge();
                 }
             }
         }
@@ -61,11 +61,11 @@ namespace KerbalMechanics
 
                     if (UnityEngine.Random.Range(0f, 1f) < CurrentChanceToFail * TimeWarp.deltaTime)
                     {
-                        BreakAltimeter();
+                        BreakThrustGauge();
                     }
                 }
             }
-            
+
             base.OnUpdate();
         }
         #endregion
@@ -73,10 +73,10 @@ namespace KerbalMechanics
         //KSP EVENTS
         #region KSP EVENTS
         /// <summary>
-        /// Fixes the altimeter.
+        /// Fixes the thrust gauge.
         /// </summary>
-        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Altimeter")]
-        public void FixAltimeter()
+        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Thrust Gauge")]
+        public void FixThrustGauge()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
             {
@@ -118,24 +118,19 @@ namespace KerbalMechanics
 
         //OTHER METHODS
         #region OTHER METHODS
-        /// <summary>
-        /// Breaks this module's altimeter.
-        /// </summary>
-        void BreakAltimeter()
+
+        void BreakThrustGauge()
         {
             if (!broken)
             {
-                failure = "Altimeter Stuck";
+                failure = "Thrust Gauge Stuck";
                 rocketPartsLeftToFix = rocketPartsNeededToFix;
-                KMUtil.PostFailure(part, "'s altimeter has become stuck!");
+                KMUtil.PostFailure(part, "'s thrust gauge has become stuck!");
 
                 broken = true;
             }
         }
 
-        /// <summary>
-        /// Displays reliability information.
-        /// </summary>
         public override void DisplayDesc(double inaccuracySeverity)
         {
             GUILayout.BeginHorizontal();

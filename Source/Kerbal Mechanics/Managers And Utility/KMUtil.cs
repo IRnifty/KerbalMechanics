@@ -33,6 +33,39 @@ namespace KerbalMechanics
         /// </summary>
         public static readonly Color KerbalGreen = new Color(0.478f, 0.698f, 0.478f, 0.698f);
 
+        public static bool DebugDeclared = false;
+
+        /// <summary>
+        /// Sets the part's highlight color.
+        /// </summary>
+        /// <param name="part">The part to set.</param>
+        /// <param name="color">The color to set.</param>
+        /// <param name="type">The highlight type to set.</param>
+        public static void SetPartHighlight(Part part, Color color, Part.HighlightType type)
+        {
+            part.highlightColor = color;
+            part.highlightType = type;
+            bool recurse = part.highlightRecurse;
+            part.highlightRecurse = false;
+            part.SetHighlight(type == Part.HighlightType.AlwaysOn);
+            part.highlightRecurse = recurse;
+        }
+
+        /// <summary>
+        /// Gets the interpolated color based on the reliability passed in, between green, yellow, and red.
+        /// </summary>
+        /// <param name="reliability">The reliability</param>
+        /// <returns>Returns the interpolated color.</returns>
+        public static Color GetReliabilityColor(float reliability)
+        {
+            if (reliability < 0.5f)
+            {
+                return Color.Lerp(Color.red, Color.yellow, reliability * 2f);
+            }
+            
+            return Color.Lerp(Color.yellow, Color.green, (reliability - 0.5f) * 2f);
+        }
+
         /// <summary>
         /// Posts a failure in the log and on the screen.
         /// </summary>
@@ -46,13 +79,12 @@ namespace KerbalMechanics
             Logger.DebugLog(message);
         }
 
-        public static void SetPartHighlight(Part part, Color color, Part.HighlightType type)
-        {
-            part.SetHighlightColor(color);
-            part.SetHighlightType(type);
-            
-        }
-
+        /// <summary>
+        /// Gets a Vector2 point on an nth order curve.
+        /// </summary>
+        /// <param name="curve">The list of Vector2 points defining the curve as well as the order of the curve.</param>
+        /// <param name="percent">The percent in the curve.</param>
+        /// <returns>Returns the  Vector2 point on the curve, given the set of points and the percent along it.</returns>
         public static Vector2 GetPointOnCurve(Vector2[] curve, float percent)
         {
             return GetCasteljauPoint(curve, curve.Length - 1, 0, percent);
@@ -69,6 +101,12 @@ namespace KerbalMechanics
             return Vector2.Lerp(p1, p2, (float)t);
         }
 
+        /// <summary>
+        /// Gets a Vector2d point on an nth order curve.
+        /// </summary>
+        /// <param name="curve">The list of Vector2d points defining the curve as well as the order of the curve.</param>
+        /// <param name="percent">The percent in the curve.</param>
+        /// <returns>Returns the  Vector2d point on the curve, given the set of points and the percent along it.</returns>
         public static Vector2d GetPointOnCurve(Vector2d[] curve, float percent)
         {
             return GetCasteljauPoint(curve, curve.Length - 1, 0, percent);
@@ -85,6 +123,13 @@ namespace KerbalMechanics
             return Vector2d.Lerp(p1, p2, (float)t);
         }
 
+        /// <summary>
+        /// Assesses whether the specified bit flag is set on the specified flag arrangement.
+        /// </summary>
+        /// <typeparam name="T">The type of flag set.</typeparam>
+        /// <param name="flags">The flag set to evaluate.</param>
+        /// <param name="flag">The flag evaluated in the flag set.</param>
+        /// <returns>Returns true if the specified flag is set in the specified flag set, otherwise false.</returns>
         public static bool IsFlagSet<T>(T flags, T flag) where T : struct
         {
             int flagsValue = (int)(object)flags;
@@ -93,6 +138,12 @@ namespace KerbalMechanics
             return (flagsValue & flagValue) != 0;
         }
 
+        /// <summary>
+        /// Sets the specified bit flag to true in the specified flag set.
+        /// </summary>
+        /// <typeparam name="T">The type of flag set.</typeparam>
+        /// <param name="flags">The flag set to set.</param>
+        /// <param name="flag">The flag to set to true in the flag set.</param>
         public static void SetFlag<T>(ref T flags, T flag) where T : struct
         {
             int flagsValue = (int)(object)flags;
@@ -101,44 +152,18 @@ namespace KerbalMechanics
             flags = (T)(object)(flagsValue | flagValue);
         }
 
+        /// <summary>
+        /// Sets the specified bit flag to false in the specified flag set.
+        /// </summary>
+        /// <typeparam name="T">The type of flag set.</typeparam>
+        /// <param name="flags">The flag set to set.</param>
+        /// <param name="flag">The flag to set to false in the flag set.</param>
         public static void UnsetFlag<T>(ref T flags, T flag) where T : struct
         {
             int flagsValue = (int)(object)flags;
             int flagValue = (int)(object)flag;
 
             flags = (T)(object)(flagsValue & (~flagValue));
-        }
-
-        public static string FormatPercent(double val)
-        {
-            string toRet = val.ToString("P10");
-
-            toRet = toRet.Substring(0, toRet.Length - 2);
-
-            toRet = toRet.TrimEnd(new Char[] {'0'});
-
-            if (toRet[toRet.Length - 1] == '.')
-            {
-                toRet = toRet.Substring(0, toRet.Length - 1);
-            }
-
-            return toRet + "%";
-        }
-
-        public static string FormatPercent(double val, int decimalCutoff)
-        {
-            string toRet = val.ToString("P" + decimalCutoff.ToString());
-
-            toRet = toRet.Substring(0, toRet.Length - 2);
-
-            toRet = toRet.TrimEnd(new Char[] { '0' });
-
-            if (toRet[toRet.Length - 1] == '.')
-            {
-                toRet = toRet.Substring(0, toRet.Length - 1);
-            }
-
-            return toRet + "%";
         }
     }
 }

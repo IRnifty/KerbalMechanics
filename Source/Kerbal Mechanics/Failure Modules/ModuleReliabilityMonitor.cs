@@ -6,38 +6,21 @@ using UnityEngine;
 
 namespace KerbalMechanics
 {
-    class ModuleReliabilityAltimeter : ModuleReliabilityInstrument
+    class ModuleReliabilityMonitor : ModuleReliabilityInstrument
     {
         //PROPERTIES
         #region PROPERTIES
         /// <summary>
-        /// The module name.
+        /// Gets the module name.
         /// </summary>
         public override string ModuleName
         {
-            get { return "Altimeter"; }
+            get { return "Part Monitor"; }
         }
         #endregion
 
         //KSP METHODS
         #region KSP METHODS
-        /// <summary>
-        /// Called when this module is started.
-        /// </summary>
-        /// <param name="state">The start state.</param>
-        public override void OnStart(PartModule.StartState state)
-        {
-            base.OnStart(state);
-
-            if (HighLogic.LoadedSceneIsFlight)
-            {
-                if (failure != "")
-                {
-                    BreakAltimeter();
-                }
-            }
-        }
-
         /// <summary>
         /// Called every time this part is updated.
         /// </summary>
@@ -58,14 +41,9 @@ namespace KerbalMechanics
                 if (vessel.geeForce > CurrentMaxGees)
                 {
                     reliability -= CurrentReliabilityDrain * (vessel.geeForce - CurrentMaxGees) * TimeWarp.deltaTime;
-
-                    if (UnityEngine.Random.Range(0f, 1f) < CurrentChanceToFail * TimeWarp.deltaTime)
-                    {
-                        BreakAltimeter();
-                    }
                 }
             }
-            
+
             base.OnUpdate();
         }
         #endregion
@@ -73,27 +51,12 @@ namespace KerbalMechanics
         //KSP EVENTS
         #region KSP EVENTS
         /// <summary>
-        /// Fixes the altimeter.
+        /// Displays the report window.
         /// </summary>
-        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Altimeter")]
-        public void FixAltimeter()
+        [KSPEvent(active = true, guiActive = true, guiActiveEditor = false, guiActiveUnfocused = false, guiName = "Get Ship Status")]
+        public void DisplayGUI()
         {
-            if (FlightGlobals.ActiveVessel.isEVA)
-            {
-                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
-
-                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
-
-                fixSound.audio.Play();
-
-                if (rocketPartsLeftToFix <= 0)
-                {
-                    failure = "";
-                    reliability += 0.25;
-                    reliability = reliability.Clamp(0, 1);
-                    broken = false;
-                }
-            }
+            InstrumentReliabilityManager.Instance.displayingGUI = true;
         }
 
         /// <summary>
@@ -119,22 +82,7 @@ namespace KerbalMechanics
         //OTHER METHODS
         #region OTHER METHODS
         /// <summary>
-        /// Breaks this module's altimeter.
-        /// </summary>
-        void BreakAltimeter()
-        {
-            if (!broken)
-            {
-                failure = "Altimeter Stuck";
-                rocketPartsLeftToFix = rocketPartsNeededToFix;
-                KMUtil.PostFailure(part, "'s altimeter has become stuck!");
-
-                broken = true;
-            }
-        }
-
-        /// <summary>
-        /// Displays reliability information.
+        /// Gets the reliability information on this module.
         /// </summary>
         public override void DisplayDesc(double inaccuracySeverity)
         {

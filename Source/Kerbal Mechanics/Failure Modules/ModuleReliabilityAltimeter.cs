@@ -33,7 +33,7 @@ namespace KerbalMechanics
             {
                 if (failure != "")
                 {
-                    BreakAltimeter();
+                    BreakAltimeter(false);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace KerbalMechanics
 
                     if (UnityEngine.Random.Range(0f, 1f) < CurrentChanceToFail * TimeWarp.deltaTime)
                     {
-                        BreakAltimeter();
+                        BreakAltimeter(true);
                     }
                 }
             }
@@ -75,7 +75,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Fixes the altimeter.
         /// </summary>
-        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Altimeter")]
+        [KSPEvent(active = true, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = false, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Altimeter")]
         public void FixAltimeter()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
@@ -91,6 +91,9 @@ namespace KerbalMechanics
                     failure = "";
                     reliability += 0.25;
                     reliability = reliability.Clamp(0, 1);
+
+                    Events["FixAltimeter"].guiActiveUnfocused = false;
+
                     broken = false;
                 }
             }
@@ -121,13 +124,20 @@ namespace KerbalMechanics
         /// <summary>
         /// Breaks this module's altimeter.
         /// </summary>
-        void BreakAltimeter()
+        /// <param name="display">If true, posts the failure to the screen message board.</param>
+        void BreakAltimeter(bool display)
         {
             if (!broken)
             {
                 failure = "Altimeter Stuck";
                 rocketPartsLeftToFix = rocketPartsNeededToFix;
-                KMUtil.PostFailure(part, "'s altimeter has become stuck!");
+
+                Events["FixAltimeter"].guiActiveUnfocused = true;
+
+                if (display)
+                {
+                    KMUtil.PostFailure(part, "'s altimeter has become stuck!");
+                }
 
                 broken = true;
             }

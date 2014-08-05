@@ -183,6 +183,8 @@ namespace KerbalMechanics
 
             bashSound = new FXGroup("hammerBash");
             SoundManager.CreateFXSound(part, bashSound, "Hammer1", false);
+
+            Events["PerformMaintenance"].guiName = "Maintain " + ModuleName;
         }
 
         public override void OnLoad(ConfigNode node)
@@ -217,7 +219,7 @@ namespace KerbalMechanics
                 {
                     Events["UnfocusedFailure"].active = false;
                     Events["UnfocusedPartsNeeded"].active = false;
-                    Events["PerformMaintenance"].active = reliability < 1f;
+                    Events["PerformMaintenance"].active = reliability < 0.99f;
                 }
 
                 reliability = reliability.Clamp(0, 1);

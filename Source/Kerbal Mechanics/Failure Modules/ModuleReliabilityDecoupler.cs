@@ -125,7 +125,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Called when "Decouple" is selected from the EVA context menu.
         /// </summary>
-        [KSPEvent(active = false, guiName = "Re-rig Decoupler", externalToEVAOnly = true, guiActiveUnfocused = true, unfocusedRange = 3f)]
+        [KSPEvent(active = false, externalToEVAOnly = true, guiActiveUnfocused = true, unfocusedRange = 3f, guiName = "Re-rig Decoupler")]
         public void ReRigDecoupler()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
@@ -157,7 +157,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Called when "Bash with Hammer" is selected from the EVA context menu.
         /// </summary>
-        [KSPEvent(active = true, guiName = "Bash Decoupler", externalToEVAOnly = true, guiActiveUnfocused = true, unfocusedRange = 3f)]
+        [KSPEvent(active = true, externalToEVAOnly = true, guiActiveUnfocused = true, unfocusedRange = 3f, guiName = "Bash Decoupler")]
         public void BashWithHammer()
         {
             bashSound.audio.clip = SoundManager.GetSound("Hammer" + Random.Range(1, 7).ToString());
@@ -247,17 +247,24 @@ namespace KerbalMechanics
                         Events["Decouple"].active = true;
                         rocketPartsLeftToFix = rocketPartsNeededToFix;
                         failure = "Decouple failure";
+                        Events["ReRigDecoupler"].active = true;
                         KMUtil.PostFailure(part, " failed to decouple due to improper explosive rigging.");
                     }
-                    else if (stage == -1)
+                    else
                     {
-                        if (decoupler)
+                        Events["ReRigDecoupler"].active = false;
+                        Events["BashWithHammer"].active = false;
+
+                        if (stage == -1)
                         {
-                            decoupler.Decouple();
-                        }
-                        else if (aDecoupler)
-                        {
-                            aDecoupler.Decouple();
+                            if (decoupler)
+                            {
+                                decoupler.Decouple();
+                            }
+                            else if (aDecoupler)
+                            {
+                                aDecoupler.Decouple();
+                            }
                         }
                     }
                 }

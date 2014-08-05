@@ -33,7 +33,7 @@ namespace KerbalMechanics
             {
                 if (failure != "")
                 {
-                    BreakThrustGauge();
+                    BreakThrustGauge(false);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace KerbalMechanics
 
                     if (UnityEngine.Random.Range(0f, 1f) < CurrentChanceToFail * TimeWarp.deltaTime)
                     {
-                        BreakThrustGauge();
+                        BreakThrustGauge(true);
                     }
                 }
             }
@@ -75,7 +75,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Fixes the thrust gauge.
         /// </summary>
-        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Thrust Gauge")]
+        [KSPEvent(active = true, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = false, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Thrust Gauge")]
         public void FixThrustGauge()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
@@ -91,6 +91,9 @@ namespace KerbalMechanics
                     failure = "";
                     reliability += 0.25;
                     reliability = reliability.Clamp(0, 1);
+
+                    Events["FixThrustGauge"].guiActiveUnfocused = false;
+
                     broken = false;
                 }
             }
@@ -118,14 +121,23 @@ namespace KerbalMechanics
 
         //OTHER METHODS
         #region OTHER METHODS
-
-        void BreakThrustGauge()
+        /// <summary>
+        /// Breaks the thrust gauge.
+        /// </summary>
+        /// <param name="display">If true, posts the failure to the screen message board.</param>
+        void BreakThrustGauge(bool display)
         {
             if (!broken)
             {
                 failure = "Thrust Gauge Stuck";
                 rocketPartsLeftToFix = rocketPartsNeededToFix;
-                KMUtil.PostFailure(part, "'s thrust gauge has become stuck!");
+
+                Events["FixThrustGauge"].guiActiveUnfocused = true;
+
+                if (display)
+                {
+                    KMUtil.PostFailure(part, "'s thrust gauge has become stuck!");
+                }
 
                 broken = true;
             }

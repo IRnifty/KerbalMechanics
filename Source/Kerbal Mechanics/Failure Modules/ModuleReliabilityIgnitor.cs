@@ -124,10 +124,11 @@ namespace KerbalMechanics
             if (HighLogic.LoadedSceneIsFlight)
             {
                 lastFrameThrust = currFrameThrust;
-                currFrameThrust = FlightInputHandler.state.mainThrottle;
 
                 if (engine)
                 {
+                    currFrameThrust = engine.thrustPercentage;
+
                     engine.staged = engine.EngineIgnited || engine.staged;
 
                     if (engine.EngineIgnited && failure == "")
@@ -153,6 +154,8 @@ namespace KerbalMechanics
                 }
                 else if (engineFX)
                 {
+                    currFrameThrust = engineFX.thrustPercentage;
+
                     engineFX.staged = engineFX.EngineIgnited || engineFX.staged;
 
                     if (engineFX.EngineIgnited && failure == "")

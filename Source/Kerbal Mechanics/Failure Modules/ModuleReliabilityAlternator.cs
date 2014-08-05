@@ -115,7 +115,7 @@ namespace KerbalMechanics
 
                 if (failure != "")
                 {
-                    BreakAlternator();
+                    BreakAlternator(false);
                 }
             }
             
@@ -137,7 +137,7 @@ namespace KerbalMechanics
 
                     if (UnityEngine.Random.Range(0f, 1f) < CurrentIdleChanceToFail * FlightInputHandler.state.mainThrottle)
                     {
-                        BreakAlternator();
+                        BreakAlternator(true);
                     }
                 }
 
@@ -145,7 +145,7 @@ namespace KerbalMechanics
                 {
                     if (UnityEngine.Random.Range(0f, 1f) < CurrentStressedChanceToFail * TimeWarp.deltaTime)
                     {
-                        BreakAlternator();
+                        BreakAlternator(true);
                     }
                 }
             }
@@ -159,7 +159,7 @@ namespace KerbalMechanics
         /// <summary>
         /// Fixes the alternator.
         /// </summary>
-        [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Altimeter")]
+        [KSPEvent(active = true, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = false, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Fix Alternator")]
         public void FixAlternator()
         {
             if (FlightGlobals.ActiveVessel.isEVA)
@@ -175,6 +175,9 @@ namespace KerbalMechanics
                     failure = "";
                     reliability += 0.25;
                     reliability = reliability.Clamp(0, 1);
+
+                    Events["FixAlternator"].guiActiveUnfocused = true;
+
                     broken = false;
                 }
             }
@@ -200,14 +203,20 @@ namespace KerbalMechanics
         //OTHER METHODS
         #region OTHER METHODS
 
-        void BreakAlternator()
+        void BreakAlternator(bool display)
         {
             if (alternator && !broken)
             {
                 alternator.enabled = false;
                 failure = "Alternator Failure";
                 rocketPartsLeftToFix = rocketPartsNeededToFix;
-                KMUtil.PostFailure(part, "has a burned out its alternator!");
+
+                Events["FixAlternator"].guiActiveUnfocused = true;
+
+                if (display)
+                {
+                    KMUtil.PostFailure(part, "has a burned out its alternator!");
+                }
                 broken = true;
             }
         }

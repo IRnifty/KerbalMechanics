@@ -93,11 +93,11 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.24.1\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.24.2\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
 
-xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.24.1\GameData\KerbalMechanics" /S /E /Y
+xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.24.2\GameData\KerbalMechanics" /S /E /Y
 
-xcopy "D:\KSP Test Folder\0.24.1\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
+xcopy "D:\KSP Test Folder\0.24.2\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
 
 copy /Y "D:\Documents\GitHub\KerbalMechanics\Source\Kerbal Mechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt"
 

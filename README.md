@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.4: Alpha
+V0.4.1: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -62,6 +62,13 @@ Failures can be fixed by going on EVA, getting some spare Rocket Parts, right-cl
 Most failure types have two repair options, one which costs Rocket Parts and is more reliable, and another, more silly option that is free, but may make the problem worse.
 
 CHANGELOG:
+
+v0.4.1:
+- Fixed the inability to fix the Altimeter and the Thrust Gauge.
+- Fixed the Alternator fix action saying "Fix Altimeter" instead of "Fix Alternator".
+- Fixed being able to perform additional actions on a spent decoupler.
+- Changed Maintenance context action to read "Maintain <Module>" instead of the generic "Perform Maintenance".
+- Changed the ship color map such that a part with a failed module will always appear red, regardless of the average reliability.
 
 v0.4:
 - Updated mod to KSP version 0.24.1.

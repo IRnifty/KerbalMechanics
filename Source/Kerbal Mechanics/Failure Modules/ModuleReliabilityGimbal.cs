@@ -99,26 +99,19 @@ namespace KerbalMechanics
             {
                 if (gimbal)
                 {
-                    if (FlightInputHandler.state.mainThrottle > 0f)
+                    if (timeSinceFailCheck < timeTillFailCheck)
                     {
-                        if (timeSinceFailCheck < timeTillFailCheck)
-                        {
-                            timeSinceFailCheck += TimeWarp.deltaTime;
-                        }
-                        else
-                        {
-                            timeSinceFailCheck = 0f;
-                            reliability -= CurrentReliabilityDrain * 10;
-
-                            if (Random.Range(0f, 1f) < CurrentChanceToFail)
-                            {
-                                BreakGimbal(true);
-                            }
-                        }
+                        timeSinceFailCheck += TimeWarp.deltaTime;
                     }
                     else
                     {
-                        reliability -= CurrentReliabilityDrain;
+                        timeSinceFailCheck = 0f;
+                        reliability -= CurrentReliabilityDrain * (FlightInputHandler.state.mainThrottle > 0f ? 10f : 1f);
+
+                        if (Random.Range(0f, 1f) < CurrentChanceToFail)
+                        {
+                            BreakGimbal(true);
+                        }
                     }
                 }
             }

@@ -157,7 +157,7 @@ namespace KerbalMechanics
                     }
                 }
 
-                if (InstrumentReliabilityManager.Instance.highlightFailedParts && !InstrumentReliabilityManager.Instance.highlightingReliability)
+                if (InstrumentReliabilityManager.Instance.highlightFailedParts)
                 {
                     if (shouldBeRed)
                     {

@@ -35,6 +35,11 @@ namespace KerbalMechanics
 
         public static bool DebugDeclared = false;
 
+        public static void StopTimeWarp()
+        {
+            TimeWarp.SetRate(0, true);
+        }
+
         /// <summary>
         /// Sets the part's highlight color.
         /// </summary>
@@ -73,6 +78,8 @@ namespace KerbalMechanics
         /// <param name="failure">The failure</param>
         public static void PostFailure(Part part, string failure)
         {
+            StopTimeWarp();
+
             string message = "FAILURE: " + part.partInfo.title + failure;
 
             ScreenMessages.PostScreenMessage(new ScreenMessage(message, 3f, ScreenMessageStyle.UPPER_LEFT, StyleManager.GetStyle("Upper Left - Red")));

@@ -47,7 +47,7 @@ namespace KerbalMechanics
 
         void InjectModules(ConfigNode node)
         {
-            foreach (ConfigNode partNode in node.GetNodes("PART"))
+            foreach (ConfigNode partNode in node.GetNodes("INJECTION"))
             {
                 bool addedReliability = false;
 

@@ -110,6 +110,18 @@ namespace KerbalMechanics
         }
 
         /// <summary>
+        /// Loads any additional fields not loaded automatically.
+        /// </summary>
+        /// <param name="node">The config node for this module.</param>
+        public override void OnLoad(ConfigNode node)
+        {
+            base.OnLoad(node);
+
+            if (node.HasValue("runningChanceToFailPerfect")) { runningChanceToFailPerfect = double.Parse(node.GetValue("runningChanceToFailPerfect")); }
+            if (node.HasValue("runningChanceToFailTerrible")) { runningChanceToFailTerrible = double.Parse(node.GetValue("runningChanceToFailTerrible")); }
+        }
+
+        /// <summary>
         /// Updates the module.
         /// </summary>
         public override void OnUpdate()

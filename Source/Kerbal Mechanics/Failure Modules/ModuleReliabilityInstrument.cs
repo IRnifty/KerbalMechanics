@@ -61,6 +61,23 @@ namespace KerbalMechanics
         }
         #endregion
 
+        //KSP METHODS
+        #region KSP METHODS
+
+        /// <summary>
+        /// Loads any additional fields not loaded automatically.
+        /// </summary>
+        /// <param name="node">The config node for this module.</param>
+        public override void OnLoad(ConfigNode node)
+        {
+            base.OnLoad(node);
+
+            if (node.HasValue("chanceToFailPerfect")) { chanceToFailPerfect = double.Parse(node.GetValue("chanceToFailPerfect")); }
+            if (node.HasValue("chanceToFailTerrible")) { chanceToFailTerrible = double.Parse(node.GetValue("chanceToFailTerrible")); }
+        }
+
+        #endregion
+
         //KSP EVENTS
         #region KSP EVENTS
         public abstract override void PerformMaintenance();

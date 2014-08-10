@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace KerbalMechanics
 {
-    [KSPAddon(KSPAddon.Startup.SpaceCentre, false)]
+    [KSPAddon(KSPAddon.Startup.MainMenu, false)]
     class ModuleInjector : MonoBehaviour
     {
         public void Awake()
@@ -434,8 +434,8 @@ namespace KerbalMechanics
             if (node.HasValue("reliability")) { module.reliability = double.Parse(node.GetValue("reliability")); }
             if (node.HasValue("failure")) { module.failure = node.GetValue("failure"); }
             if (node.HasValue("rocketPartsNeededToFix")) { module.rocketPartsNeededToFix = int.Parse(node.GetValue("rocketPartsNeededToFix")); }
-            if (node.HasValue("reliabilityDrainPerfect")) { module.reliabilityDrainPerfect = int.Parse(node.GetValue("reliabilityDrainPerfect")); }
-            if (node.HasValue("reliabilityDrainTerrible")) { module.reliabilityDrainTerrible = int.Parse(node.GetValue("reliabilityDrainTerrible")); }
+            if (node.HasValue("reliabilityDrainPerfect")) { module.lifeTimePerfect = int.Parse(node.GetValue("reliabilityDrainPerfect")); }
+            if (node.HasValue("reliabilityDrainTerrible")) { module.lifeTimeTerrible = int.Parse(node.GetValue("reliabilityDrainTerrible")); }
         }
 
         void ConfigureInstrumentValues(ConfigNode node, ModuleReliabilityInstrument module)

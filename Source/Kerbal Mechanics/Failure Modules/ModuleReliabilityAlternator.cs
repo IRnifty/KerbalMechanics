@@ -120,8 +120,25 @@ namespace KerbalMechanics
             }
             
             base.OnStart(state);
-        } 
+        }
 
+        /// <summary>
+        /// Loads any additional fields not loaded automatically.
+        /// </summary>
+        /// <param name="node">The config node for this module.</param>
+        public override void OnLoad(ConfigNode node)
+        {
+            base.OnLoad(node);
+
+            if (node.HasValue("idleChanceToFailPerfect")) { idleChanceToFailPerfect = double.Parse(node.GetValue("idleChanceToFailPerfect")); }
+            if (node.HasValue("idleChanceToFailTerrible")) { idleChanceToFailTerrible = double.Parse(node.GetValue("idleChanceToFailTerrible")); }
+            if (node.HasValue("stressedChanceToFailPerfect")) { stressedChanceToFailPerfect = double.Parse(node.GetValue("stressedChanceToFailPerfect")); }
+            if (node.HasValue("stressedChanceToFailTerrible")) { stressedChanceToFailTerrible = double.Parse(node.GetValue("stressedChanceToFailTerrible")); }
+        }
+
+        /// <summary>
+        /// Updates the module.
+        /// </summary>
         public override void OnUpdate()
         {
             if (HighLogic.LoadedSceneIsFlight)

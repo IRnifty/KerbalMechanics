@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace KerbalMechanics
         /// The chance of explosion upon activation.
         /// </summary>
         [KSPField]
-        public float chanceOfExplosion = 0.125f;
+        public float chanceOfExplosion = 0.0625f;
         /// <summary>
         /// The chance of explosion when bashed with a hammer.
         /// </summary>
@@ -26,7 +27,7 @@ namespace KerbalMechanics
         /// The chance of nothing happening upon activation.
         /// </summary>
         [KSPField]
-        public float chanceOfNothing = 0.5f;
+        public float chanceOfNothing = 0.2625f;
         /// <summary>
         /// The chance of nothing happening when bashed with a hammer.
         /// </summary>
@@ -230,7 +231,7 @@ namespace KerbalMechanics
 
                     if (rand < chanceOfExplosion / Mathf.Clamp01(quality / 0.75f))
                     {
-                        part.explode();
+                        StartCoroutine(DelayedExplode());
                         KMUtil.PostFailure(part, " has exploded due to improper detonator rigging.");
                     }
                     else if (rand < chanceOfNothing / Mathf.Clamp01(quality / 0.75f))
@@ -293,6 +294,12 @@ namespace KerbalMechanics
             GUILayout.EndVertical();
 
             GUILayout.EndHorizontal();
+        }
+
+        IEnumerator DelayedExplode ()
+        {
+            yield return new WaitForEndOfFrame();
+            part.explode();
         }
         #endregion
     }

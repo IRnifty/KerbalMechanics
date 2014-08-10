@@ -10,8 +10,8 @@ namespace KerbalMechanics
     /// </summary>
     class ModuleReliabilityIgnitor : ModuleReliabilityBase
     {
-        //FAILURE CHANCES
-        #region FAILURE CHANCES
+        //KSP FIELDS
+        #region KSP FIELDS
         /// <summary>
         /// Chance to fail while starting under perfect conditions
         /// </summary>
@@ -114,6 +114,18 @@ namespace KerbalMechanics
                     BreakIgnitor(false);
                 }
             }
+        }
+
+        /// <summary>
+        /// Loads any additional fields not loaded automatically.
+        /// </summary>
+        /// <param name="node">The config node for this module.</param>
+        public override void OnLoad(ConfigNode node)
+        {
+            base.OnLoad(node);
+
+            if (node.HasValue("startingChanceToFailPerfect")) { startingChanceToFailPerfect = double.Parse(node.GetValue("startingChanceToFailPerfect")); }
+            if (node.HasValue("startingChanceToFailTerrible")) { startingChanceToFailTerrible = double.Parse(node.GetValue("startingChanceToFailTerrible")); }
         }
 
         /// <summary>

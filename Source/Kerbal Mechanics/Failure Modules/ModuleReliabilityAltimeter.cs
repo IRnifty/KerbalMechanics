@@ -39,7 +39,7 @@ namespace KerbalMechanics
         }
 
         /// <summary>
-        /// Called every time this part is updated.
+        /// Updates the module.
         /// </summary>
         public override void OnUpdate()
         {

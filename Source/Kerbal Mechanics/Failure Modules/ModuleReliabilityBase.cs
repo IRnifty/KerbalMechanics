@@ -74,13 +74,13 @@ namespace KerbalMechanics
         /// The reliability drain of this part while running perfectly (100% quality).
         /// </summary>
         [KSPField]
-        public int reliabilityDrainPerfect = 425;
+        public int lifeTimePerfect = 425;
 
         /// <summary>
         /// The reliability drain of this part while running terribly (0% quality).
         /// </summary>
         [KSPField]
-        public int reliabilityDrainTerrible = 43;
+        public int lifeTimeTerrible = 43;
         #endregion
         #endregion
 
@@ -166,10 +166,10 @@ namespace KerbalMechanics
                 }
             }
 
-            reliabilityCurve = new Vector2d[] { new Vector2d(0, reliabilityDrainTerrible),
-			new Vector2d(0.75, reliabilityDrainTerrible),
-			new Vector2d(0.25, reliabilityDrainPerfect),
-			new Vector2d(1, reliabilityDrainPerfect) };
+            reliabilityCurve = new Vector2d[] { new Vector2d(0, lifeTimeTerrible),
+			new Vector2d(0.75, lifeTimeTerrible),
+			new Vector2d(0.25, lifeTimePerfect),
+			new Vector2d(1, lifeTimePerfect) };
 
             SoundManager.LoadSound(KMUtil.soundSource + "Fix", "Fix");
 
@@ -187,6 +187,10 @@ namespace KerbalMechanics
             Events["PerformMaintenance"].guiName = "Maintain " + ModuleName;
         }
 
+        /// <summary>
+        /// Loads any additional fields not loaded automatically.
+        /// </summary>
+        /// <param name="node">The config node for this module.</param>
         public override void OnLoad(ConfigNode node)
         {
             base.OnLoad(node);

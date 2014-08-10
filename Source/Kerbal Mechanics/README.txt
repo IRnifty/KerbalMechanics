@@ -3,7 +3,7 @@ V0.4.1: Alpha
 
 This software is provided "as-is" with no warranties.
 
-Redistribution and/or modification of anything provided is STRICTLY PROHIBITED.
+Presented under the GPL v3 license.
 
 Creation and/or publication of media (images, videos, etc.) while using this software is authorized.
 
@@ -62,6 +62,16 @@ Failures can be fixed by going on EVA, getting some spare Rocket Parts, right-cl
 Most failure types have two repair options, one which costs Rocket Parts and is more reliable, and another, more silly option that is free, but may make the problem worse.
 
 CHANGELOG:
+
+v0.4.2:
+- Fixed Decouplers not completing contract tests when either exploding or silently failing.
+- Lowered decoupler default chance to explode from 12.5% to 6.25%.
+- Lowered decoupler default chance to silently fail from 50% to 20%.
+- Fixed fuel tanks with more than one resource initially leaking one resource, and occasionally reloading with a different one leaking.
+- Fixed more variables not loading properly.
+- Changed "reliabilityDrain" variable names to "lifeTime" to coincide with the fact that they hold the number of days a part will take to hit 0% reliability.
+- Added Small Spare Parts Container to tech tree under "General Construction" and fixed the base price to 100 FUNds.
+- Set RocketParts resource unit cost to 1 FUNd per unit of RocketParts, making a full Small Spare Parts Container cost 600 FUNds.
 
 v0.4.1:
 - Fixed the inability to fix the Altimeter and the Thrust Gauge.

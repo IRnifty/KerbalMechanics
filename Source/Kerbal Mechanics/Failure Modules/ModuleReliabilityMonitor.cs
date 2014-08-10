@@ -22,7 +22,7 @@ namespace KerbalMechanics
         //KSP METHODS
         #region KSP METHODS
         /// <summary>
-        /// Called every time this part is updated.
+        /// Updates the module.
         /// </summary>
         public override void OnUpdate()
         {

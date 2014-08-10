@@ -27,6 +27,12 @@ namespace KerbalMechanics
         public float pole = 0.1f;
 
         /// <summary>
+        /// The current leak name. Empty if not leaking.
+        /// </summary>
+        [KSPField(isPersistant = true, guiActive = false)]
+        public string leakName = "";
+
+        /// <summary>
         /// The maximum amount pole can be set to.
         /// </summary>
         [KSPField]
@@ -120,9 +126,21 @@ namespace KerbalMechanics
             }
         }
 
-        ///// <summary>
-        ///// Called when the part is updated.
-        ///// </summary>
+        /// <summary>
+        /// Loads any additional fields not loaded automatically.
+        /// </summary>
+        /// <param name="node">The config node for this module.</param>
+        public override void OnLoad(ConfigNode node)
+        {
+            base.OnLoad(node);
+
+            if (node.HasValue("chanceToFailPerfect")) { chanceToFailPerfect = double.Parse(node.GetValue("chanceToFailPerfect")); }
+            if (node.HasValue("chanceToFailTerrible")) { chanceToFailTerrible = double.Parse(node.GetValue("chanceToFailTerrible")); }
+        }
+
+        /// <summary>
+        /// Updates the module.
+        /// </summary>
         public override void OnUpdate()
         {
             if (HighLogic.LoadedSceneIsFlight)
@@ -147,7 +165,16 @@ namespace KerbalMechanics
                 else
                 {
                     double amount = pole * leak.amount * (rocketPartsLeftToFix / rocketPartsNeededToFix) * TimeWarp.deltaTime;
-                    part.RequestResource(leak.resourceName, amount);
+
+                    if (leak.flowState)
+                    {
+                        part.RequestResource(leak.resourceName, amount);
+                    }
+                    else
+                    {
+                        leak.amount -= amount;
+                        leak.amount = System.Math.Max(leak.amount, 0);
+                    }
                 }
             }
 
@@ -192,6 +219,7 @@ namespace KerbalMechanics
 
             leak = null;
             failure = "";
+            leakName = "";
             reliability += 0.1f;
 
             reliability = reliability.Clamp(0, 1);
@@ -250,14 +278,29 @@ namespace KerbalMechanics
         {
             if (!broken && leakables != null && leakables.Count > 0)
             {
-                // Choose a random severity of the leak
-                float TC = UnityEngine.Random.Range(minTC, maxTC);
-                this.pole = 1 / TC;
+                int idx = 0;
+                if (leakName == "")
+                {
+                    // Pick a random index to leak.
+                    idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
+                    leak = leakables[idx];
+                    leakName = leak.resourceName;
 
-                // Pick a random index to leak.
-                int idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
-
-                leak = leakables[idx];
+                    // Choose a random severity of the leak
+                    float TC = UnityEngine.Random.Range(minTC, maxTC);
+                    pole = 1 / TC;
+                }
+                else
+                {
+                    for (idx = 0; idx < leakables.Count; idx++)
+                    {
+                        if (leakables[idx].resourceName == leakName)
+                        {
+                            leak = leakables[idx];
+                            break;
+                        }
+                    }
+                }
 
                 this.failure = leak.resourceName + " leaking!";
 

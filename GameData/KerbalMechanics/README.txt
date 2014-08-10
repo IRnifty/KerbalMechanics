@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.4.1: Alpha
+V0.4.2: Alpha
 
 This software is provided "as-is" with no warranties.
 

@@ -40,7 +40,7 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\KSP Test Folder\0.24.1\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\KSP Test Folder\0.90\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,8 +49,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\KSP Test Folder\0.90\KSP_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -93,11 +94,11 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.24.2\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.90\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
 
-xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.24.2\GameData\KerbalMechanics" /S /E /Y
+xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.90\GameData\KerbalMechanics" /S /E /Y
 
-xcopy "D:\KSP Test Folder\0.24.2\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
+xcopy "D:\KSP Test Folder\0.90\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics" /S /E /Y
 
 copy /Y "D:\Documents\GitHub\KerbalMechanics\Source\Kerbal Mechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\GameData\KerbalMechanics\README.txt"
 

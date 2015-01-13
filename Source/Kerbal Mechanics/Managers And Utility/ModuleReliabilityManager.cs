@@ -186,11 +186,11 @@ namespace KerbalMechanics
         /// Gets the module's cost. Can be negative to reduce part cost.
         /// </summary>
         /// <returns>Returns the module's cost. Positive or negative based on overall quality.</returns>
-        public float GetModuleCost()
+        public float GetModuleCost(float defaultCost)
         {
             try
             {
-                return CalculateCost() - part.partInfo.cost;
+                return CalculateCost() - defaultCost;
             }
             catch
             {

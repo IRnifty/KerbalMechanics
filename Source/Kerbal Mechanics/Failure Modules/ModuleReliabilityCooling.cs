@@ -198,15 +198,18 @@ namespace KerbalMechanics
         {
             if (FlightGlobals.ActiveVessel.isEVA)
             {
-                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
-
-                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
-
-                fixSound.audio.Play();
-
-                if (rocketPartsLeftToFix <= 0)
+                if (!KMUtil.IsModeCareer || CanRepair)
                 {
-                    FixCooling(false);
+                    Part kerbal = FlightGlobals.ActiveVessel.parts[0];
+
+                    rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
+
+                    fixSound.audio.Play();
+
+                    if (rocketPartsLeftToFix <= 0)
+                    {
+                        FixCooling(false);
+                    }
                 }
             }
         }

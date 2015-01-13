@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.4.2: Alpha
+V0.5: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -60,8 +60,17 @@ A Reliability Monitor has been added:
 
 Failures can be fixed by going on EVA, getting some spare Rocket Parts, right-clicking the part, and attempting the fix.
 Most failure types have two repair options, one which costs Rocket Parts and is more reliable, and another, more silly option that is free, but may make the problem worse.
+Be warned, though. Most proper repairs require an experienced Kerbal Engineer.
 
 CHANGELOG:
+
+v0.5:
+- KSP 0.9 compatibility update. Fixed IPartCostModifier bug and part highlighting bug resulting from changes between 0.25 and 0.9.
+- All proper repairs require a Kerbal with the Engineer skill, with varying degrees of experience. Improper repairs remain accessible by any Kerbal.
+- All proper repairs can be done by any Kerbal of any experience if not in Career Mode.
+- Reduced Decoupler chance of silent failure from 20% to 10%.
+- Module Injector now searches all config files for injections, allowing separated injection files.
+- Modified reliability drain logic to properly reflect the Kerbin 6 hour day.
 
 v0.4.2:
 - Fixed Decouplers not completing contract tests when either exploding or silently failing.

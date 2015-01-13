@@ -39,6 +39,12 @@ namespace KerbalMechanics
         public string failure = "";
 
         /// <summary>
+        /// The required crew skill to repair this part. Level 0 is completely untrained, and level 5 is completely trained.
+        /// </summary>
+        [KSPField]
+        public int repairSkill = 0;
+
+        /// <summary>
         /// How many rocket parts does it take in total to fix this part?
         /// </summary>
         [KSPField]
@@ -95,11 +101,20 @@ namespace KerbalMechanics
             {
                 double days =  KMUtil.GetPointOnCurve(reliabilityCurve, quality).y;
 
-                return (double)(1 / (days * 2165.08));
+                return (double)(1 / (days * 2160)); // 2160 = 6 hour Kerbin day in intervals of 10 seconds.
             }
         }
+
         /// <summary>
-        /// The name of the module. Held for use by the module injecter.
+        /// Returns true if the current Kerbal can repair this reliability module.
+        /// </summary>
+        protected bool CanRepair
+        {
+            get { return FlightGlobals.ActiveVessel.VesselValues.RepairSkill.value >= repairSkill; }
+        }
+
+        /// <summary>
+        /// The name of the module. Held for use by the module injector.
         /// </summary>
         public abstract string ModuleName
         {

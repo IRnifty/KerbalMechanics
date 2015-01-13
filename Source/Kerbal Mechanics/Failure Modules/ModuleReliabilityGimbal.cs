@@ -174,14 +174,17 @@ namespace KerbalMechanics
         {
             if (FlightGlobals.ActiveVessel.isEVA)
             {
-                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
+                if (!KMUtil.IsModeCareer || CanRepair)
+                {
+                    Part kerbal = FlightGlobals.ActiveVessel.parts[0];
 
-                double partsGotten = kerbal.RequestResource("RocketParts", 2);
+                    double partsGotten = kerbal.RequestResource("RocketParts", 2);
 
-                fixSound.audio.Play();
+                    fixSound.audio.Play();
 
-                reliability += 0.05 * partsGotten;
-                reliability = reliability.Clamp(0, 1);
+                    reliability += 0.05 * partsGotten;
+                    reliability = reliability.Clamp(0, 1);
+                }
             }
         }
         #endregion

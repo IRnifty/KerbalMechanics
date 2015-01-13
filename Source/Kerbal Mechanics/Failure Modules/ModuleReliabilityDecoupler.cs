@@ -27,7 +27,7 @@ namespace KerbalMechanics
         /// The chance of nothing happening upon activation.
         /// </summary>
         [KSPField]
-        public float chanceOfNothing = 0.2625f;
+        public float chanceOfNothing = 0.1625f;
         /// <summary>
         /// The chance of nothing happening when bashed with a hammer.
         /// </summary>
@@ -131,26 +131,33 @@ namespace KerbalMechanics
         {
             if (FlightGlobals.ActiveVessel.isEVA)
             {
-                Part kerbal = FlightGlobals.ActiveVessel.parts[0];
-
-                rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
-
-                fixSound.audio.Play();
-
-                if (rocketPartsLeftToFix <= 0)
+                if (!KMUtil.IsModeCareer || CanRepair)
                 {
-                    if (decoupler)
-                    {
-                        decoupler.isDecoupled = false;
-                        decoupler.Decouple();
-                    }
-                    else if (aDecoupler)
-                    {
-                        aDecoupler.isDecoupled = false;
-                        aDecoupler.Decouple();
-                    }
+                    Part kerbal = FlightGlobals.ActiveVessel.parts[0];
 
-                    failure = "";
+                    rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
+
+                    fixSound.audio.Play();
+
+                    if (rocketPartsLeftToFix <= 0)
+                    {
+                        if (decoupler)
+                        {
+                            decoupler.isDecoupled = false;
+                            decoupler.Decouple();
+                        }
+                        else if (aDecoupler)
+                        {
+                            aDecoupler.isDecoupled = false;
+                            aDecoupler.Decouple();
+                        }
+
+                        failure = "";
+                    }
+                }
+                else
+                {
+                    ScreenMessages.PostScreenMessage("Crew member has insufficient Engineer skill level\nLevel " + repairSkill.ToString() + " is required");
                 }
             }
         }

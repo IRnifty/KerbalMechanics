@@ -190,22 +190,28 @@ namespace KerbalMechanics
         [KSPEvent(active = false, guiName = "Patch Leak", guiActive = false, guiActiveUnfocused = true, unfocusedRange = 3f, externalToEVAOnly = true)]
         public void FixLeak()
         {
-            Part kerbal = FlightGlobals.ActiveVessel.parts[0];
-
-            rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
-
-            fixSound.audio.Play();
-
-            if (rocketPartsLeftToFix <= 0)
+            if (FlightGlobals.ActiveVessel.isEVA)
             {
-                Events["FixLeak"].active = false;
-                Events["ApplyDuctTape"].active = false;
+                if (!KMUtil.IsModeCareer || CanRepair)
+                {
+                    Part kerbal = FlightGlobals.ActiveVessel.parts[0];
 
-                leak = null;
-                failure = "";
-                reliability = 1f;
+                    rocketPartsLeftToFix -= (int)kerbal.RequestResource("RocketParts", (double)System.Math.Min(rocketPartsLeftToFix, 10));
 
-                broken = false;
+                    fixSound.audio.Play();
+
+                    if (rocketPartsLeftToFix <= 0)
+                    {
+                        Events["FixLeak"].active = false;
+                        Events["ApplyDuctTape"].active = false;
+
+                        leak = null;
+                        failure = "";
+                        reliability = 1f;
+
+                        broken = false;
+                    }
+                }
             }
         }
         /// <summary>

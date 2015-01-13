@@ -12,8 +12,10 @@ namespace KerbalMechanics
     {
         public void Awake()
         {
+            // Reference to the PreStart instance.
             ModuleInjectorPreStart injection = ModuleInjectorPreStart.Instance;
 
+            // Attempt to add reliability injections. Will halt if the injection list has already been filled.
             try
             {
                 injection.moduleInjections.Add("ModuleReliabilityIgnitor", new ModuleInjection(AddIgnitor));
@@ -28,8 +30,7 @@ namespace KerbalMechanics
                 injection.moduleInjections.Add("ModuleReliabilityMonitor", new ModuleInjection(AddMonitor));
                 injection.resourceInjections.Add("RocketParts", new ModuleInjection(AddRocketParts));
 
-                ConfigNode node = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/KerbalMechanics/Injections.cfg") ?? new ConfigNode();
-                InjectModules(node);
+                InjectModules();
             }
             catch (Exception e)
             {
@@ -45,9 +46,19 @@ namespace KerbalMechanics
             }
         }
 
-        void InjectModules(ConfigNode node)
+        void InjectModules()
         {
-            foreach (ConfigNode partNode in node.GetNodes("INJECTION"))
+            // Count total inject parts, modules, and resources.
+            int partsInjected = 0;
+            int modulesInjected = 0;
+            int resourcesInjected = 0;
+
+            // Get the list of INJECTION ConfigNodes and log the number found.
+            ConfigNode[] injectionNodes = GameDatabase.Instance.GetConfigNodes("INJECTION");
+            Logger.DebugLog("Found: " + injectionNodes.Length.ToString() + " injection nodes.");
+
+            // Iterate through and begin injecting.
+            foreach (ConfigNode partNode in injectionNodes)
             {
                 bool addedReliability = false;
 
@@ -67,6 +78,12 @@ namespace KerbalMechanics
                     continue;
                 }
 
+                // Modules injected into this part.
+                int modsInjected = 0;
+
+                // Has this part already been added to the count?
+                bool partCounted = false;
+
                 // Iterate through all MODULE nodes in the PART node, and inject them
                 ConfigNode[] moduleNodes = partNode.GetNodes("MODULE");
                 foreach (ConfigNode moduleNode in moduleNodes)
@@ -84,17 +101,29 @@ namespace KerbalMechanics
                         if (entry.Key == moduleToAdd)
                         {
                             entry.Value(moduleNode, aPart);
+                            modsInjected++;
                         }
                     }
 
                     addedReliability = (addedReliability || moduleToAdd.Contains("Reliability"));
                 }
 
+                // Add the Manager module if any reliability modules were injected.
                 if (addedReliability)
                 {
-                    //Add the Monitor module
                     AddManager(aPart);
                 }
+
+                // If more than no modules were injected into this part, count them and the part.
+                if (modsInjected > 0)
+                {
+                    partsInjected++;
+                    modulesInjected += modsInjected;
+                    partCounted = true;
+                }
+
+                // Resources injected into this part
+                int resInjected = 0;
 
                 // Iterate through all RESOURCE nodes in the PART node, and inject them
                 ConfigNode[] resourceNodes = partNode.GetNodes("RESOURCE");
@@ -113,10 +142,22 @@ namespace KerbalMechanics
                         if (entry.Key == resourceToAdd)
                         {
                             entry.Value(resourceNode, aPart);
+                            resInjected++;
                         }
                     }
                 }
+
+                if (resInjected > 0)
+                {
+                    if (!partCounted)
+                    {
+                        partsInjected++;
+                    }
+                    resourcesInjected += resInjected;
+                }
             }
+
+            Logger.DebugLog("Injected " + modulesInjected.ToString() + " modules and " + resourcesInjected.ToString() + " resources into " + partsInjected.ToString() + " parts.");
         }
 
         void AddRocketParts(ConfigNode node, AvailablePart aPart)
@@ -433,6 +474,7 @@ namespace KerbalMechanics
             if (node.HasValue("quality")) { module.quality = float.Parse(node.GetValue("quality")); }
             if (node.HasValue("reliability")) { module.reliability = double.Parse(node.GetValue("reliability")); }
             if (node.HasValue("failure")) { module.failure = node.GetValue("failure"); }
+            if (node.HasValue("repairSkill")) { module.repairSkill = int.Parse(node.GetValue("repairSkill")); }
             if (node.HasValue("rocketPartsNeededToFix")) { module.rocketPartsNeededToFix = int.Parse(node.GetValue("rocketPartsNeededToFix")); }
             if (node.HasValue("reliabilityDrainPerfect")) { module.lifeTimePerfect = int.Parse(node.GetValue("reliabilityDrainPerfect")); }
             if (node.HasValue("reliabilityDrainTerrible")) { module.lifeTimeTerrible = int.Parse(node.GetValue("reliabilityDrainTerrible")); }

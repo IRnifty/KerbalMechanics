@@ -33,8 +33,22 @@ namespace KerbalMechanics
         /// </summary>
         public static readonly Color KerbalGreen = new Color(0.478f, 0.698f, 0.478f, 0.698f);
 
+        /// <summary>
+        /// Has Debug been declared by the command line?
+        /// </summary>
         public static bool DebugDeclared = false;
 
+        /// <summary>
+        /// Is this the Career game mode?
+        /// </summary>
+        public static bool IsModeCareer
+        {
+            get { return HighLogic.CurrentGame.Mode == Game.Modes.CAREER; }
+        }
+
+        /// <summary>
+        /// Stops the current time warp, resetting to x1 speed.
+        /// </summary>
         public static void StopTimeWarp()
         {
             TimeWarp.SetRate(0, true);
@@ -50,10 +64,7 @@ namespace KerbalMechanics
         {
             part.highlightColor = color;
             part.highlightType = type;
-            bool recurse = part.highlightRecurse;
-            part.highlightRecurse = false;
-            part.SetHighlight(type == Part.HighlightType.AlwaysOn);
-            part.highlightRecurse = recurse;
+            part.SetHighlight(type == Part.HighlightType.AlwaysOn, false);
         }
 
         /// <summary>

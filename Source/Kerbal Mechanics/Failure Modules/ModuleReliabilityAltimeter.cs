@@ -139,7 +139,7 @@ namespace KerbalMechanics
 
                 if (display)
                 {
-                    KMUtil.PostFailure(part, "'s altimeter has become stuck!");
+                    KMUtil.PostFailure(this, "'s altimeter has become stuck!");
                 }
 
                 broken = true;

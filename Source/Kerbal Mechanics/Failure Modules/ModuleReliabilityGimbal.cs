@@ -161,7 +161,7 @@ namespace KerbalMechanics
             if (rand < chanceKickWillLock)
             {
                 permanentLock = true;
-                KMUtil.PostFailure(part, " has permanently locked due to kicking!");
+                KMUtil.PostFailure(this, " has permanently locked due to kicking!");
             }
             else if (rand > (1f - chanceKickWillFix))
             {
@@ -209,7 +209,7 @@ namespace KerbalMechanics
 
                 if (display)
                 {
-                    KMUtil.PostFailure(part, "'s gimbal has frozen!");
+                    KMUtil.PostFailure(this, "'s gimbal has frozen!");
                 }
 
                 broken = true;

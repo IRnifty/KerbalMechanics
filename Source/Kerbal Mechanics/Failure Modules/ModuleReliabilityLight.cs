@@ -225,7 +225,7 @@ namespace KerbalMechanics
                 rocketPartsLeftToFix = rocketPartsNeededFlickering;
                 isFlickering = true;
                 failure = "Flickering Light Bulb";
-                KMUtil.PostFailure(part, "'s light has begun flickering. Replace soon.");
+                KMUtil.PostFailure(this, "'s light has begun flickering. Replace soon.");
                 broken = true;
             }
         }
@@ -259,7 +259,7 @@ namespace KerbalMechanics
 
             if (display)
             {
-                KMUtil.PostFailure(part, " has busted its light bulb.");
+                KMUtil.PostFailure(this, " has busted its light bulb.");
             }
 
             broken = true;

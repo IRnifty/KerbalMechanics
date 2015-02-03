@@ -273,7 +273,7 @@ namespace KerbalMechanics
 
                 if (display)
                 {
-                    KMUtil.PostFailure(part, " has had a cooling system failure!");
+                    KMUtil.PostFailure(this, " has had a cooling system failure!");
                 }
 
                 broken = true;

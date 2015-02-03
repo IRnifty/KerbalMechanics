@@ -139,7 +139,7 @@ namespace KerbalMechanics
 
                 if (display)
                 {
-                    KMUtil.PostFailure(part, "'s thrust gauge has become stuck!");
+                    KMUtil.PostFailure(this, "'s thrust gauge has become stuck!");
                 }
 
                 broken = true;

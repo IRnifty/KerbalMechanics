@@ -25,9 +25,7 @@ namespace KerbalMechanics
         List<ModuleReliabilityMonitor> monitorModules;
         List<ModuleReliabilityManager> managerModules;
         Rect windowRect;
-        public bool displayingGUI = false;
         public bool highlightingReliability = false;
-        public bool highlightFailedParts = false;
         public double averageMonitorReliability = 0;
 
         //Misc.
@@ -147,34 +145,6 @@ namespace KerbalMechanics
             }
             averageMonitorReliability /= monitorModules.Count;
             #endregion
-        }
-
-        void OnGUI()
-        {
-            if (displayingGUI)
-            {
-                windowRect = GUI.Window(GetInstanceID(), windowRect, DisplayWindow, "Ship Status Report", HighLogic.Skin.window);
-            }
-        }
-
-        void DisplayWindow(int windowID)
-        {
-            //X Button
-            if (GUI.Button(new Rect(windowRect.width - 25f, 5f, 20f, 20f), "X", HighLogic.Skin.button))
-            {
-                displayingGUI = false;
-            }
-
-            GUILayout.BeginVertical();
-
-            highlightFailedParts = GUILayout.Toggle(highlightFailedParts, "Highlight Failed Parts", HighLogic.Skin.toggle);
-            highlightingReliability = GUILayout.Toggle(highlightingReliability, "Map Ship Status", HighLogic.Skin.toggle);
-
-            GUILayout.Label(windowRect.ToString(), HighLogic.Skin.label);
-
-            GUILayout.EndVertical();
-
-            GUI.DragWindow();
         }
 
         void RecompileLists(Vessel vessel)

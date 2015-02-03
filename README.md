@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.5: Alpha
+V0.6: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -63,6 +63,13 @@ Most failure types have two repair options, one which costs Rocket Parts and is 
 Be warned, though. Most proper repairs require an experienced Kerbal Engineer.
 
 CHANGELOG:
+
+v0.6:
+- Added settings option to stop time warp when a failure occurs. Default on.
+- Added settings option to display an alert dialog when a failure occurs. Default on.
+- Added settings option to highlight in red the failing part while the alert is open. Default on.
+- Added icon to the KSP toolbar (A.K.A the "App Launcher") which handles the new settings and the ship status highlighing.
+- Removed "Highlight Failed Parts" ship status option. Failed parts now automatically display as red when ship status highlighting is active.
 
 v0.5:
 - KSP 0.9 compatibility update. Fixed IPartCostModifier bug and part highlighting bug resulting from changes between 0.25 and 0.9.

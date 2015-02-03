@@ -315,7 +315,7 @@ namespace KerbalMechanics
                 Events["FixLeak"].active = true;
                 Events["ApplyDuctTape"].active = true;
 
-                KMUtil.PostFailure(part, " has begun leaking " + leak.resourceName + "!");
+                KMUtil.PostFailure(this, " has begun leaking " + leak.resourceName + "!");
 
                 broken = true;
             }

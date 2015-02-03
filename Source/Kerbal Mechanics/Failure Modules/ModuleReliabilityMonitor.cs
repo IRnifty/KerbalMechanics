@@ -51,15 +51,6 @@ namespace KerbalMechanics
         //KSP EVENTS
         #region KSP EVENTS
         /// <summary>
-        /// Displays the report window.
-        /// </summary>
-        [KSPEvent(active = true, guiActive = true, guiActiveEditor = false, guiActiveUnfocused = false, guiName = "Get Ship Status")]
-        public void DisplayGUI()
-        {
-            InstrumentReliabilityManager.Instance.displayingGUI = true;
-        }
-
-        /// <summary>
         /// Performs preventative maintenance on the module.
         /// </summary>
         [KSPEvent(active = false, guiActive = false, guiActiveEditor = false, guiActiveUnfocused = true, externalToEVAOnly = true, unfocusedRange = 3f, guiName = "Perform Maintenance")]

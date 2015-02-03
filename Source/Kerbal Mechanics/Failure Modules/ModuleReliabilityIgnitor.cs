@@ -298,7 +298,7 @@ namespace KerbalMechanics
 
                 if (display)
                 {
-                    KMUtil.PostFailure(part, "'s ignition coil has burnt up!");
+                    KMUtil.PostFailure(this, "'s ignition coil has burnt up!");
                 }
 
                 broken = true;

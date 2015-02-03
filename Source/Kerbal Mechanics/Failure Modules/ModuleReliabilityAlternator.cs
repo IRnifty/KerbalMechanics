@@ -235,8 +235,9 @@ namespace KerbalMechanics
 
                 if (display)
                 {
-                    KMUtil.PostFailure(part, "has a burned out its alternator!");
+                    KMUtil.PostFailure(this, "has a burned out its alternator!");
                 }
+
                 broken = true;
             }
         }

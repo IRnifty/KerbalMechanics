@@ -157,7 +157,7 @@ namespace KerbalMechanics
                     }
                 }
 
-                if (InstrumentReliabilityManager.Instance.highlightFailedParts)
+                if (InstrumentReliabilityManager.Instance.highlightingReliability)
                 {
                     if (shouldBeRed)
                     {
@@ -166,16 +166,12 @@ namespace KerbalMechanics
                             KMUtil.SetPartHighlight(part, Color.red, Part.HighlightType.AlwaysOn);
                         }
                     }
-                    else if (part.highlightColor != KMUtil.KerbalGreen)
+                    else
                     {
-                        KMUtil.SetPartHighlight(part, KMUtil.KerbalGreen, Part.HighlightType.OnMouseOver);
+                        KMUtil.SetPartHighlight(part, KMUtil.GetReliabilityColor(Mathf.Clamp01((float)(GetAverageReliability() + inaccuracy))), Part.HighlightType.AlwaysOn);
                     }
                 }
-                else if (InstrumentReliabilityManager.Instance.highlightingReliability)
-                {
-                    KMUtil.SetPartHighlight(part, KMUtil.GetReliabilityColor(Mathf.Clamp01((float) (GetAverageReliability() + inaccuracy))), Part.HighlightType.AlwaysOn);
-                }
-                else if (part.highlightColor != KMUtil.KerbalGreen)
+                else if (!KerbalMechanicsApp.IsAlertingThisPart(part) && part.highlightColor != KMUtil.KerbalGreen)
                 {
                     KMUtil.SetPartHighlight(part, KMUtil.KerbalGreen, Part.HighlightType.OnMouseOver);
                 }

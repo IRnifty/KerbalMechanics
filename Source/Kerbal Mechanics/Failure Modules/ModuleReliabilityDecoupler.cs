@@ -239,7 +239,7 @@ namespace KerbalMechanics
                     if (rand < chanceOfExplosion / Mathf.Clamp01(quality / 0.75f))
                     {
                         StartCoroutine(DelayedExplode());
-                        KMUtil.PostFailure(part, " has exploded due to improper detonator rigging.");
+                        KMUtil.PostFailure(this, " has exploded due to improper detonator rigging.");
                     }
                     else if (rand < chanceOfNothing / Mathf.Clamp01(quality / 0.75f))
                     {
@@ -256,7 +256,7 @@ namespace KerbalMechanics
                         rocketPartsLeftToFix = rocketPartsNeededToFix;
                         failure = "Decouple failure";
                         Events["ReRigDecoupler"].active = true;
-                        KMUtil.PostFailure(part, " failed to decouple due to improper explosive rigging.");
+                        KMUtil.PostFailure(this, " failed to decouple due to improper explosive rigging.");
                     }
                     else
                     {

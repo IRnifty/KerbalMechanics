@@ -87,13 +87,14 @@ namespace KerbalMechanics
         /// </summary>
         /// <param name="part">The part that failed</param>
         /// <param name="failure">The failure</param>
-        public static void PostFailure(Part part, string failure)
+        public static void PostFailure(ModuleReliabilityBase module, string failure)
         {
-            StopTimeWarp();
+            if (KMSettings.Instance.stopTimeWarpOnFailure) { StopTimeWarp(); }
 
-            string message = "FAILURE: " + part.partInfo.title + failure;
+            string message = "FAILURE: " + module.part.partInfo.title + failure;
 
             ScreenMessages.PostScreenMessage(new ScreenMessage(message, 3f, ScreenMessageStyle.UPPER_LEFT, StyleManager.GetStyle("Upper Left - Red")));
+            if (KMSettings.Instance.alertMessageOnFailure) { KerbalMechanicsApp.Alert(module, message); }
             Logger.DebugLog(message);
         }
 

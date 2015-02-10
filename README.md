@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.6: Alpha
+V0.6.1: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -63,6 +63,9 @@ Most failure types have two repair options, one which costs Rocket Parts and is 
 Be warned, though. Most proper repairs require an experienced Kerbal Engineer.
 
 CHANGELOG:
+
+v0.6.1:
+- Fixed part highlighting compatibility issue with Ship Manifest (and any other mod that highlights parts).
 
 v0.6:
 - Added settings option to stop time warp when a failure occurs. Default on.

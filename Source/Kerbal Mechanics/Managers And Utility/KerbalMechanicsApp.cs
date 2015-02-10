@@ -20,7 +20,6 @@ namespace KerbalMechanics
         private Rect alertRect;
 
         private int currentTab = 1;
-
         private string[] tabNames = new string[] { "Ship Status", "KM Settings" };
 
         public ModuleReliabilityBase alerting = null;
@@ -145,7 +144,6 @@ namespace KerbalMechanics
         private void Reposition()
         {
             float anchor = kmAppButton.GetAnchor().x;
-            Logger.DebugLog(anchor.ToString());
 
             windowRect = new Rect(Mathf.Min(anchor + 960.5f, 1670f), 40f, 250f, 200f);
         }

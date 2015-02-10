@@ -80,6 +80,11 @@ namespace KerbalMechanics
         /// The change in cost per 1% quality
         /// </summary>
         float changePerPercent;
+
+        /// <summary>
+        /// Is thi part being highlighted?
+        /// </summary>
+        bool isHighlighting = false;
         #endregion
 
         //KSP METHODS
@@ -157,23 +162,32 @@ namespace KerbalMechanics
                     }
                 }
 
-                if (InstrumentReliabilityManager.Instance.highlightingReliability)
+                if (isHighlighting || InstrumentReliabilityManager.Instance.highlightingReliability)
                 {
-                    if (shouldBeRed)
+                    isHighlighting = true;
+
+                    if (!InstrumentReliabilityManager.Instance.highlightingReliability)
                     {
-                        if (part.highlightColor != Color.red)
+                        isHighlighting = false;
+                        if (!KerbalMechanicsApp.IsAlertingThisPart(part))
                         {
-                            KMUtil.SetPartHighlight(part, Color.red, Part.HighlightType.AlwaysOn);
+                            KMUtil.SetPartHighlight(part, KMUtil.KerbalGreen, Part.HighlightType.OnMouseOver);
                         }
                     }
                     else
                     {
-                        KMUtil.SetPartHighlight(part, KMUtil.GetReliabilityColor(Mathf.Clamp01((float)(GetAverageReliability() + inaccuracy))), Part.HighlightType.AlwaysOn);
+                        if (shouldBeRed)
+                        {
+                            if (part.highlightColor != Color.red)
+                            {
+                                KMUtil.SetPartHighlight(part, Color.red, Part.HighlightType.AlwaysOn);
+                            }
+                        }
+                        else
+                        {
+                            KMUtil.SetPartHighlight(part, KMUtil.GetReliabilityColor(Mathf.Clamp01((float)(GetAverageReliability() + inaccuracy))), Part.HighlightType.AlwaysOn);
+                        }
                     }
-                }
-                else if (!KerbalMechanicsApp.IsAlertingThisPart(part) && part.highlightColor != KMUtil.KerbalGreen)
-                {
-                    KMUtil.SetPartHighlight(part, KMUtil.KerbalGreen, Part.HighlightType.OnMouseOver);
                 }
             }
         }

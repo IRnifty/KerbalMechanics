@@ -96,15 +96,15 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\KSP Test Folder\0.90\GameData\KerbalMechanics\Plugins\$(TargetFileName)"
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics\Plugins\$(TargetFileName)"
 
-xcopy "$(ProjectDir)cfgs" "D:\KSP Test Folder\0.90\GameData\KerbalMechanics" /S /E /Y
-
-xcopy "D:\KSP Test Folder\0.90\GameData\KerbalMechanics" "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics" /S /E /Y
+xcopy "$(ProjectDir)cfgs" "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics" /S /E /Y
 
 copy /Y "D:\Documents\GitHub\KerbalMechanics\Source\Kerbal Mechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics\README.txt"
 
-copy /Y "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\README.md"</PostBuildEvent>
+copy /Y "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\README.md"
+
+xcopy "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics" "D:\KSP Test Folder\0.90\GameData\KerbalMechanics" /S /E /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

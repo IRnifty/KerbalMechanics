@@ -242,11 +242,11 @@ namespace KerbalMechanics
             float anchor = kmAppButton.GetAnchor().x;
 
             // Adjusts the window bounds.
-            windowRect = new Rect(Mathf.Min(anchor + 960.5f, 1670f), 40f, 250f, 200f);
+            windowRect = new Rect(Mathf.Min(anchor + 960.5f, Screen.width - 250f), 40f, 250f, 200f);
         }
 
         /// <summary>
-        /// A dummy method which returns nothing. 
+        /// A dummy method which returns nothing.
         /// </summary>
         private void DummyVoid() { /* I do nothing!!! \('o')/ */ }
 

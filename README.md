@@ -64,6 +64,9 @@ Be warned, though. Most proper repairs require an experienced Kerbal Engineer.
 
 CHANGELOG:
 
+v0.6.3:
+- Fixed App window bug on resolutions other than 1080p.
+
 v0.6.2:
 - Fixed KSP App Launcher bug when switching to the main menu and back.
 - Fixed bug with App window not showing when an alert is showing.

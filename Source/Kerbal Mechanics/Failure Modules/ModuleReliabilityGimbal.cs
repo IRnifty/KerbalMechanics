@@ -201,7 +201,7 @@ namespace KerbalMechanics
             {
                 failure = "Gimbal Stuck";
 
-                gimbal.LockGimbal();
+                gimbal.gimbalLock = true;
                 gimbal.Events["LockGimbal"].guiActive = false;
                 gimbal.Events["FreeGimbal"].guiActive = false;
                 gimbal.Actions["ToggleAction"].active = false;
@@ -224,7 +224,7 @@ namespace KerbalMechanics
         {
             failure = "";
 
-            gimbal.FreeGimbal();
+            gimbal.gimbalLock = false;
             gimbal.Events["LockGimbal"].guiActive = true;
             gimbal.Events["FreeGimbal"].guiActive = true;
             gimbal.Actions["ToggleAction"].active = true;

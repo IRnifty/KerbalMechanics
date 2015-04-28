@@ -1,5 +1,5 @@
 ﻿Kerbal Mechanics: Part Failures
-V0.6.2: Alpha
+V0.6.4: Alpha
 
 This software is provided "as-is" with no warranties.
 
@@ -63,6 +63,9 @@ Most failure types have two repair options, one which costs Rocket Parts and is 
 Be warned, though. Most proper repairs require an experienced Kerbal Engineer.
 
 CHANGELOG:
+
+v0.6.4:
+- KSP 1.0 "Kompatibility" update ;3
 
 v0.6.3:
 - Fixed App window bug on resolutions other than 1080p.

@@ -40,7 +40,7 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\KSP Test Folder\0.90\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\KSP Test Folder\1.0\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\KSP Test Folder\0.90\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\KSP Test Folder\1.0\KSP_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -104,7 +104,7 @@ copy /Y "D:\Documents\GitHub\KerbalMechanics\Source\Kerbal Mechanics\README.txt"
 
 copy /Y "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics\README.txt" "D:\Documents\GitHub\KerbalMechanics\README.md"
 
-xcopy "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics" "D:\KSP Test Folder\0.90\GameData\KerbalMechanics" /S /E /Y</PostBuildEvent>
+xcopy "D:\Documents\GitHub\KerbalMechanics\KerbalMechanics" "D:\KSP Test Folder\1.0\GameData\KerbalMechanics" /S /E /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
